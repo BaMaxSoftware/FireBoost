@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+	<Name>Fire boost plugin.</Name>
+	<Assembly>FPBoost\FireBoost.dll</Assembly>
+	<AddInId>7CF31B68-82C7-443D-A6A4-EC41D95E4203</AddInId>
+	<FullClassName>FireBoost.ExternalApplication</FullClassName>
+	<VendorId>VendorId</VendorId>
+	<VendorDescription></VendorDescription>
+	</AddIn>
+</RevitAddIns>

@@ -1,0 +1,400 @@
+﻿<Window x:Class="FireBoost.Features.Selection.Views.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:vm="clr-namespace:FireBoost.Features.Selection.ViewModels"
+        xml:lang="en-US"
+        mc:Ignorable="d" 
+        Height="750"
+        Width="550"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize"
+        Title="Подбор"
+        d:DataContext="{d:DesignInstance Type=vm:SelectionVM, IsDesignTimeCreatable=False}"
+        SizeToContent="Height">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FireBoost;component/Resources/ResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+        
+        <GroupBox Style="{DynamicResource GroupBoxStyle1}"
+                  Grid.Row="0" 
+                  Header="Исходные данные">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="60"/>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="170"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="Место установки" 
+                           Style="{DynamicResource TextBlockStyle1}"
+                           Grid.Row="0"
+                           Grid.Column="0"/>
+                <ComboBox Style="{DynamicResource ComboBoxStyle1}" 
+                          Grid.Row="0"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Path=HostsArray}"
+                          SelectedItem="{Binding Path=SelectedHost}"/>
+                
+                <TextBlock Text="Форма" 
+                           Style="{DynamicResource TextBlockStyle1}"
+                           Grid.Row="1"
+                           Grid.Column="0"/>
+                <ComboBox Style="{DynamicResource ComboBoxStyle1}" 
+                          Grid.Row="1"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Path=ShapesArray}"
+                          SelectedItem="{Binding Path=SelectedShape}"/>
+
+                <TextBlock Text="Тип коммуникаций" 
+                           Style="{DynamicResource TextBlockStyle1}"
+                           Grid.Row="2"
+                           Grid.Column="0"/>
+                <ComboBox x:Name="comboBox" 
+                          Style="{DynamicResource ComboBoxStyle1}" 
+                          Grid.Row="2"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Path=CommunicationsTypes}"
+                          SelectedItem="{Binding Path=SelectedMepType}">
+                    <ComboBox.Resources>
+                        <DataTemplate x:Key="groupStyle">
+                            <TextBlock FontWeight="Bold" Text="{Binding Name}"/>
+                        </DataTemplate>
+                    </ComboBox.Resources>
+                    <ComboBox.GroupStyle>
+                        <GroupStyle HeaderTemplate="{StaticResource groupStyle}"/>
+                    </ComboBox.GroupStyle>
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding SubType}"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
+                </ComboBox>
+                
+                <TextBlock Text="Конструктивное исполнение" 
+                           Style="{DynamicResource TextBlockStyle1}"
+                           Grid.Row="3"
+                           Grid.Column="0"/>
+                <ComboBox Style="{DynamicResource ComboBoxStyle1}" 
+                          Grid.Row="3"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Path=StructuralDesignsArray}"
+                          SelectedItem="{Binding Path=SelectedStructuralDesign}"/>
+
+                <TextBlock Text="Материал заделки" 
+                           Style="{DynamicResource TextBlockStyle1}"
+                           Grid.Row="4"
+                           Grid.Column="0"/>
+                <ComboBox Style="{DynamicResource ComboBoxStyle1}" 
+                          Grid.Row="4"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Path=MaterialsArray}"
+                          SelectedItem="{Binding Path=SelectedMaterial}"/>
+
+                <TextBlock Text="Предел огнестойкости" 
+                           Style="{DynamicResource TextBlockStyle1}"
+                           Grid.Row="5"
+                           Grid.Column="0"/>
+                <ComboBox Style="{DynamicResource ComboBoxStyle1}" 
+                          Grid.Row="5"
+                          Grid.Column="1"
+                          ItemsSource="{Binding Path=FireResistancesArray}"
+                          SelectedItem="{Binding Path=SelectedFireResistance}"/>
+                <GroupBox Header="Семейство"
+                          Style="{DynamicResource GroupBoxStyle1}"
+                          Grid.Row="6"
+                          Grid.ColumnSpan="2"
+                          HorizontalAlignment="Stretch" Padding="10">
+                    <TextBlock Text="{Binding FamilyFromDb}"
+                               ToolTip="{Binding FamilyFromDb}"/>
+                </GroupBox>
+                
+                <GroupBox Header="Тип"
+                          Style="{DynamicResource GroupBoxStyle1}"
+                          Grid.Row="7"
+                          Grid.ColumnSpan="2"
+                          HorizontalAlignment="Stretch" 
+                          Padding="10">
+                    <TextBlock Text="{Binding TypeFromDb}" 
+                               ToolTip="{Binding TypeFromDb}"/>
+                </GroupBox>
+
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Grid.Row="1" 
+                  Header="Размеры"
+                  Style="{DynamicResource GroupBoxStyle1}">
+            <StackPanel>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="25"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="101"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <CheckBox Content="Задать вручную"
+                              Grid.Row="0"
+                              Grid.ColumnSpan="2"
+                              Style="{DynamicResource CheckBoxStyle1}"
+                              IsChecked="{Binding IsDimensionsManually}">
+                    </CheckBox>
+                    <Expander x:Name="DimensionsExpander"
+                              Style="{DynamicResource ExpanderStyle1}"
+                              Grid.Row="1"
+                              Grid.ColumnSpan="2"
+                              IsExpanded="{Binding Path=IsDimensionsManually}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="100"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Style="{DynamicResource TextBlockStyle1}"
+                                       Grid.Row="0"
+                                       Grid.Column="0"
+                                       Text="Высота"/>
+                            <TextBlock Style="{DynamicResource TextBlockStyle1}"
+                                       Grid.Row="1"
+                                       Grid.Column="0"
+                                       Text="Ширина"/>
+                            <TextBlock Style="{DynamicResource TextBlockStyle1}"
+                                       Grid.Row="2"
+                                       Grid.Column="0"
+                                       Text="Диаметр"/>
+
+                            <TextBox x:Name="HeightTextBox" 
+                                     Grid.Row="0"
+                                     Grid.Column="1" 
+                                     Style="{DynamicResource TextBoxStyle1}">
+                                <TextBox.Text>
+                                    <Binding Path="Height" >
+                                        <Binding.ValidationRules>
+                                            <DataErrorValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <TextBox x:Name="WidthTextBox"
+                                     Grid.Row="1"
+                                     Grid.Column="1"
+                                     Style="{DynamicResource TextBoxStyle1}">
+                                <TextBox.Text>
+                                    <Binding Path="Width" >
+                                        <Binding.ValidationRules>
+                                            <DataErrorValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                            <TextBox x:Name="DiametrTextBox"
+                                     Grid.Row="2"
+                                     Grid.Column="1"
+                                     Style="{StaticResource TextBoxStyle1}">
+                                <TextBox.Text>
+                                    <Binding Path="Diameter">
+                                        <Binding.ValidationRules>
+                                            <DataErrorValidationRule />
+                                        </Binding.ValidationRules>
+                                    </Binding>
+                                </TextBox.Text>
+                            </TextBox>
+                        </Grid>
+                    </Expander>
+
+                    <TextBlock Style="{DynamicResource TextBlockStyle1}"
+                               Grid.Row="2"
+                               Grid.Column="0"
+                               Text="Зазор"/>
+                    <TextBox x:Name="OffsetTextBox"
+                             Grid.Row="2"
+                             Grid.Column="1"
+                             Style="{DynamicResource TextBoxStyle1}">
+                        <TextBox.Text>
+                            <Binding Path="Offset" >
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </Grid>
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="1*"/>
+                    </Grid.RowDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="265"/>
+                        <ColumnDefinition Width="auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="0"
+                               Text="Округлить размеры с точностью до"
+                               Style="{DynamicResource TextBlockStyle1}"/>
+                    <TextBox Grid.Row="0"
+                             Grid.Column="1"
+                             Width="40"
+                             Style="{DynamicResource TextBoxStyle1}">
+                        <TextBox.Text>
+                            <Binding Path="DimensionsRoundTo" >
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <TextBlock Grid.Row="0"
+                               Grid.Column="3"
+                               Text="мм"
+                               Style="{DynamicResource TextBlockStyle1}"/>
+
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="0"
+                               Text="Выровнять высотную отметку с точностью до"
+                               Style="{DynamicResource TextBlockStyle1}"/>
+                    <TextBox Grid.Row="1"
+                             Grid.Column="1"
+                             Width="40"
+                             Style="{DynamicResource TextBoxStyle1}">
+                        <TextBox.Text>
+                            <Binding Path="ElevationRoundTo" >
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                    <TextBlock Grid.Row="1"
+                               Grid.Column="3"
+                               Text="мм"
+                               Style="{DynamicResource TextBlockStyle1}"/>
+                    <CheckBox Grid.Row="2"
+                              Grid.ColumnSpan="2"
+                              Style="{DynamicResource CheckBoxStyle1}"
+                              Content="Объединить проходки" 
+                              IsChecked="{Binding IsJoin}">
+                    </CheckBox>
+                </Grid>
+            </StackPanel>
+        </GroupBox>
+
+        <GroupBox Header="Выбрать элементы"
+                  Style="{DynamicResource GroupBoxStyle1}"
+                  Grid.Row="2">
+            <StackPanel>
+                <GroupBox Header="В активном проекте"
+                          Style="{DynamicResource GroupBoxStyle1}"
+                          Grid.Row="2">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{DynamicResource ButtonOkStyle}" 
+                                    Width="180"
+                                    Margin="0,5"
+                                    Content="Коммуникации"
+                                    Command="{Binding DocElementSelection}"/>
+                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=DocMepCount}" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{DynamicResource ButtonOkStyle}" 
+                                    Width="180"
+                                    Margin="0,5"
+                                    Content="Стены/перекрытия"
+                                    Command="{Binding DocHostSelection}"/>
+                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=DocHostCount}" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="В связанном файле"
+                          Style="{DynamicResource GroupBoxStyle1}"
+                          Grid.Row="2">
+                    <StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{DynamicResource ButtonOkStyle}" 
+                                    Width="180"
+                                    Margin="0,5"
+                                    Content="Коммуникации"
+                                    Command="{Binding LinkElementSelection}"/>
+                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=LinkMepCount}" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Button Style="{DynamicResource ButtonOkStyle}" 
+                                    Width="180"
+                                    Margin="0,5"
+                                    Content="Стены/перекрытия"
+                                    Command="{Binding LinkHostSelection}"/>
+                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=LinkHostCount}" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </GroupBox>
+
+
+        <StackPanel Grid.Row="3" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right">
+            <Button x:Name="ButtonSettings"
+                    Content="Настройки" 
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,10,5"
+                    Style="{DynamicResource ButtonOkStyle}"
+                    Click="ButtonSettings_Click"/>
+            <StackPanel HorizontalAlignment="Right"
+                        Margin="0,5,10,0"
+                        Orientation="Horizontal">
+                <Button x:Name="ButtonOK"
+                        IsEnabled="{Binding ButtonOKIsEnabled}"
+                        Content="Разместить" 
+                        Margin="0,0,5,0"
+                        Style="{DynamicResource ButtonOkStyle}"
+                        Click="ButtonOK_Click"/>
+                <Button x:Name="ButtonCancel" 
+                        Content="Закрыть" 
+                        Style="{DynamicResource ButtonOkStyle}"
+                        Click="ButtonCancel_Click"/>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
+
+    
+    

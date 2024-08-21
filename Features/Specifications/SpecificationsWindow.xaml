@@ -1,0 +1,71 @@
+﻿<Window x:Class="FireBoost.Features.Specifications.SpecificationsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:FireBoost.Features.Specifications"
+        xmlns:vm="clr-namespace:FireBoost.Features.Specifications"
+        mc:Ignorable="d" 
+        MinHeight="450" 
+        MinWidth="400"
+        Height="450" 
+        Width="400"
+        Title="Спецификации"
+        d:DataContext="{d:DesignInstance Type=vm:SpecificationsVM, IsDesignTimeCreatable=False}"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FireBoost;component/Resources/ResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="80"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <ListBox ItemsSource="{Binding Schedules}">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel>
+                        <CheckBox x:Name="ViewSelector"
+                                  Content="{Binding Name}"
+                                  CommandParameter="{Binding}"
+                                  Checked="ViewSelector_Checked"
+                                  Unchecked="ViewSelector_Unchecked"
+                                  ToolTip="{Binding Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <StackPanel Grid.Row="1" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right">
+                <Button x:Name="ButtonSettings"
+                        HorizontalAlignment="Right"
+                        VerticalAlignment="Center"
+                        Margin="0,0,10,5"
+                        Content="Настройки" 
+                        Style="{DynamicResource ButtonOkStyle}"
+                        Click="ButtonSettings_Click"/>
+            <StackPanel HorizontalAlignment="Right"
+                        Margin="0,5,10,0"
+                        Orientation="Horizontal">
+                <Button x:Name="ButtonOK"
+                        Content="Скопировать" 
+                        Width="105"
+                        Margin="0,0,5,0"
+                        Style="{DynamicResource ButtonOkStyle}"
+                        Click="ButtonOK_Click"/>
+                <Button x:Name="ButtonCancel" 
+                        Content="Закрыть" 
+                        Style="{DynamicResource ButtonOkStyle}"
+                        Click="ButtonCancel_Click"/>
+            </StackPanel>
+        </StackPanel>
+
+    </Grid>
+</Window>

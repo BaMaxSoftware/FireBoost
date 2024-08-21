@@ -1,0 +1,66 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FireBoost", "FireBoost.csproj", "{DE24876E-88DF-4887-9BAC-362FFF4FCADB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84} = {2C3D243F-0F71-40D8-BD1C-64683C395D84}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Database", "Database\Database.csproj", "{02D96469-1908-4935-94C0-DEAAA5DC74A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "License", "Licencse\License.csproj", "{2C3D243F-0F71-40D8-BD1C-64683C395D84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Core", "Core\Core.csproj", "{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|x64 = Debug|x64
+		Release|Any CPU = Release|Any CPU
+		Release|x64 = Release|x64
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Debug|x64.ActiveCfg = Debug|x64
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Debug|x64.Build.0 = Debug|x64
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Release|x64.ActiveCfg = Release|x64
+		{DE24876E-88DF-4887-9BAC-362FFF4FCADB}.Release|x64.Build.0 = Release|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Debug|Any CPU.Build.0 = Debug|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Debug|x64.ActiveCfg = Debug|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Debug|x64.Build.0 = Debug|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Release|Any CPU.ActiveCfg = Release|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Release|Any CPU.Build.0 = Release|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Release|x64.ActiveCfg = Release|x64
+		{02D96469-1908-4935-94C0-DEAAA5DC74A2}.Release|x64.Build.0 = Release|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Debug|Any CPU.Build.0 = Debug|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Debug|x64.ActiveCfg = Debug|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Debug|x64.Build.0 = Debug|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Release|Any CPU.ActiveCfg = Release|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Release|Any CPU.Build.0 = Release|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Release|x64.ActiveCfg = Release|x64
+		{2C3D243F-0F71-40D8-BD1C-64683C395D84}.Release|x64.Build.0 = Release|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Debug|Any CPU.Build.0 = Debug|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Debug|x64.ActiveCfg = Debug|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Debug|x64.Build.0 = Debug|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Release|Any CPU.ActiveCfg = Release|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Release|Any CPU.Build.0 = Release|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Release|x64.ActiveCfg = Release|x64
+		{65483EBA-0E5A-4D6C-99A8-41C3BDBB296B}.Release|x64.Build.0 = Release|x64
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {04C0FFFA-85EA-494A-A1F3-0AA86B60AF02}
+		RESX_NeutralResourcesLanguage = en-US
+		RESX_AutoCreateNewLanguageFiles = True
+	EndGlobalSection
+EndGlobal

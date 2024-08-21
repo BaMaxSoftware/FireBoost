@@ -1,0 +1,566 @@
+<SmartAssemblyProject ProjectId="{19119841-5514-4116-9920-a7fc1a66501a}" Version="2.0">
+    <MainAssemblyFileName>..\bin\x64\Release\FireBoost.dll</MainAssemblyFileName>
+    <Configuration Name="Release">
+        <Options>
+            <ExceptionReporting Template="res:{SmartExceptions}.1033.dll" />
+            <FeatureUsageReporting Template="res:SmartUsageWithUIConsentFirstRun1033.dll" />
+            <StringsEncoding Compress="1" Encode="1" UseCache="1" UseImprovedEncoding="1" />
+            <StrongNameSigning Sign="0" />
+            <Obfuscation CompilerGeneratedSerializable="1" FieldsNameMangling="3" NameMangling="3" />
+            <OtherProtections SuppressIldasm="1" />
+            <OtherOptimizations SealClasses="1" />
+            <Debugging />
+            <CopyDependencies />
+        </Options>
+        <ApplicationName />
+        <Assemblies>
+            <Assembly AssemblyName="mscorlib, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Core, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Net, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Net.Http, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Runtime, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Threading.Tasks, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Xml, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Numerics, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Security, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Configuration, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Data.SqlXml, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.ComponentModel.Composition, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Database, Culture=neutral, PublicKeyToken=null">
+                <Merging>
+                    <ResourcesCompression />
+                    <MemberRefsProxy />
+                    <Pruning />
+                    <Obfuscation />
+                    <ControlFlow />
+                </Merging>
+                <Embedding />
+            </Assembly>
+            <Assembly AssemblyName="FireSharp, Culture=neutral, PublicKeyToken=null">
+                <Embedding Compress="1" Encrypt="1" />
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="RevitAPIUI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Drawing, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="PresentationCore, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="PresentationFramework, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Xaml, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Windows.Forms, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Newtonsoft.Json, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Data.SQLite, Culture=neutral, PublicKeyToken=db937bc2d44ff139">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="WindowsBase, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Data, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="AdskRcManaged, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RevitAPIFoundation, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RevitDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RevitDBCoreAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="PersistenceDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="UtilityAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="APIDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="GraphicsAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="ElementGroupDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="EssentialsDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="GeomUtilAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="FamilyDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="DetailDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="CurtainGridFamilyDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="ArrayElemsDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="EnergyAnalysisDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="BuildingSystemsDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="HostObjDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RoomAreaPlanDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="SiteDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="SculptingDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="StructuralDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="InterfaceAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="InterfaceUtilAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RebarDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="StructuralAnalysisDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="MassingDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="AssemblyDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="DPartDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="NumberingDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="PointCloudAccessAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="StairRampDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="AnalysisAppsDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="MaterialDBAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="IntfATFAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="TextEngineAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="DBManagedServices, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Microsoft.VisualC.STLCLR, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="AdWindows, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RevitAddInUtility, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="APIInterop, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="AddInManager, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RevitUIAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="BuildingSystemsUIAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="DesktopMFCAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="APIUIAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="RevitMFCAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="EssentialsUIAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="EnergyAnalysisUtilitiesAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="DetailUIAPI, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="UIFrameworkServices, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="WindowsFormsIntegration, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="UIAutomationTypes, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="UIAutomationProvider, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Accessibility, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Xml.Linq, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Runtime.Serialization, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.ServiceModel.Internals, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="SMDiagnostics, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Autodesk.UI.Windows, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Autodesk.UI.Themes, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Xceed.Wpf.AvalonDock, Culture=neutral, PublicKeyToken=3e4669d2f30244f4">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="UIAutomationClient, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="CompositionServices, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Windows.Input.Manipulations, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Deployment, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="ReachFramework, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="PresentationUI, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Printing, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.DirectoryServices, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Runtime.Serialization.Formatters.Soap, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Transactions, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.EnterpriseServices, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Runtime.Remoting, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Web, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Web.RegularExpressions, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Design, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Web.ApplicationServices, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.ComponentModel.DataAnnotations, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.DirectoryServices.Protocols, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.ServiceProcess, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Web.Services, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Microsoft.Build.Utilities.v4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Runtime.Caching, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Microsoft.Build.Framework, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Microsoft.Build.Tasks.v4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Data.OracleClient, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Drawing.Design, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="System.Configuration.Install, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="Core, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+                <Embedding Compress="1" Encrypt="1" />
+            </Assembly>
+            <Assembly AssemblyName="FireBoost, Culture=neutral, PublicKeyToken=null">
+                <Merging>
+                    <ResourcesCompression Compress="1" />
+                    <MemberRefsProxy Proxy="1" />
+                    <Pruning Prune="1">
+                        <Exclusion />
+                    </Pruning>
+                    <Obfuscation Obfuscate="1">
+                        <Exclusion />
+                    </Obfuscation>
+                    <ControlFlow Obfuscate="1" ObfuscationLevel="4" />
+                    <StringsEncoding />
+                </Merging>
+                <Embedding />
+            </Assembly>
+            <Assembly AssemblyName="RevitAPI, Culture=neutral, PublicKeyToken=null">
+                <Embedding Compress="1" Encrypt="1" />
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="License, Culture=neutral, PublicKeyToken=null">
+                <Embedding Compress="1" Encrypt="1" />
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="UIFramework, Culture=neutral, PublicKeyToken=null">
+                <Embedding Compress="1" Encrypt="1" />
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="AdpSDKCSharpWrapper, Culture=neutral, PublicKeyToken=null">
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="CefSharp.Core, Culture=neutral, PublicKeyToken=40c4b6fc221f4138">
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="CefSharp, Culture=neutral, PublicKeyToken=40c4b6fc221f4138">
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="CefSharp.Wpf, Culture=neutral, PublicKeyToken=40c4b6fc221f4138">
+                <Merging />
+            </Assembly>
+            <Assembly AssemblyName="SmartAssembly.StringsEncodingZip, Culture=neutral, PublicKeyToken=7f465a1c156d4d57">
+                <Merging>
+                    <Pruning>
+                        <Exclusion />
+                    </Pruning>
+                    <Obfuscation>
+                        <Exclusion />
+                    </Obfuscation>
+                </Merging>
+            </Assembly>
+            <Assembly AssemblyName="SmartAssembly.Zip, Culture=neutral, PublicKeyToken=7f465a1c156d4d57">
+                <Merging>
+                    <Pruning>
+                        <Exclusion />
+                    </Pruning>
+                    <Obfuscation>
+                        <Exclusion />
+                    </Obfuscation>
+                </Merging>
+            </Assembly>
+            <Assembly AssemblyName="SmartAssembly.AssemblyResolver, Culture=neutral, PublicKeyToken=7f465a1c156d4d57">
+                <Merging>
+                    <Obfuscation>
+                        <Exclusion />
+                    </Obfuscation>
+                </Merging>
+            </Assembly>
+            <Assembly AssemblyName="SmartAssembly.ResourceResolver, Culture=neutral, PublicKeyToken=7f465a1c156d4d57">
+                <Merging>
+                    <Obfuscation>
+                        <Exclusion />
+                    </Obfuscation>
+                </Merging>
+            </Assembly>
+            <Assembly AssemblyName="SmartAssembly.HouseOfCards, Culture=neutral, PublicKeyToken=7f465a1c156d4d57">
+                <Merging>
+                    <Obfuscation>
+                        <Exclusion />
+                    </Obfuscation>
+                </Merging>
+            </Assembly>
+        </Assemblies>
+        <Destination DestinationFileName="..\Confused\FireBoost.dll" />
+    </Configuration>
+</SmartAssemblyProject>
