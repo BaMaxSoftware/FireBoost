@@ -28,7 +28,8 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <ListBox ItemsSource="{Binding Schedules}">
+        <ListBox ItemsSource="{Binding Schedules}"
+                 Margin="10">
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
@@ -43,16 +44,16 @@
             </ListBox.ItemTemplate>
         </ListBox>
 
-        <StackPanel Grid.Row="1" Margin="5" VerticalAlignment="Center" HorizontalAlignment="Right">
+        <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Right">
                 <Button x:Name="ButtonSettings"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Center"
-                        Margin="0,0,10,5"
+                        Margin="0,0,15,5"
                         Content="Настройки" 
                         Style="{DynamicResource ButtonOkStyle}"
                         Click="ButtonSettings_Click"/>
             <StackPanel HorizontalAlignment="Right"
-                        Margin="0,5,10,0"
+                        Margin="0,5,15,0"
                         Orientation="Horizontal">
                 <Button x:Name="ButtonOK"
                         Content="Скопировать" 

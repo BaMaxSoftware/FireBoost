@@ -1,11 +1,9 @@
 ﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.DB.Electrical;
-using Autodesk.Revit.DB.Mechanical;
-using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.DB.Structure;
-using FireBoost.Domain.Data;
 using FireBoost.Domain.Enums;
+using FireBoost.Domain;
 using System;
+using FireBoost.Domain.Data;
 
 namespace FireBoost.Features.Selection.Models
 {

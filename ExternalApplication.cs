@@ -41,13 +41,12 @@ namespace FireBoost
                     "Спецификации",
                     "Копирует спецификации из выбранного шаблона.",
                     Resources.Schedules);
-                //AddButton( 
-                //    "ParametersButton",
-                //    "FireBoost.ExternalCommands.ParametersCommand",
-                //    "Параметры", 
-                //    "Описание...",
-                //    "Полное описание...",
-                //    Resources.Parameters);
+                AddButton(
+                    "ParametersButton",
+                    "FireBoost.ExternalCommands.ParametersCommand",
+                    "Параметры",
+                    "Описание...",
+                    Resources.Parameters);
                 AddButton(
                     "ManagerButton",
                     "FireBoost.ExternalCommands.ManagerCommand",

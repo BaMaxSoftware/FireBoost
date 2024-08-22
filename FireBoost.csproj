@@ -130,6 +130,11 @@
     <Compile Include="Features\Manager\ManagerWindow.xaml.cs">
       <DependentUpon>ManagerWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Features\ParametersCopy\ParametersApp.cs" />
+    <Compile Include="Features\ParametersCopy\ViewModels\ParametersVM.cs" />
+    <Compile Include="Features\ParametersCopy\Views\ParametersWindow.xaml.cs">
+      <DependentUpon>ParametersWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Features\Selection\Models\CreatorBase.cs" />
     <Compile Include="Features\Selection\Models\CreatorWithMEP.cs" />
     <Compile Include="Features\Selection\Models\CreatorWithoutMEP.cs" />
@@ -174,6 +179,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Features\ParametersCopy\Views\ParametersWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Features\Selection\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -198,7 +207,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Features\Parameters\" />
+    <Folder Include="Features\ParametersCopy\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\32x32_testButton.png" />

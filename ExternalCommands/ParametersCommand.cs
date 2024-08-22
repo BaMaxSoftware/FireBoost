@@ -1,6 +1,7 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
+using FireBoost.Features.ParametersCopy;
 
 namespace FireBoost.ExternalCommands
 {
@@ -14,6 +15,7 @@ namespace FireBoost.ExternalCommands
         /// </summary>
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
+            new ParametersApp(commandData.Application).Run();
             return Result.Succeeded;
         }
     }
