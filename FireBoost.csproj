@@ -131,6 +131,7 @@
       <DependentUpon>ManagerWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Features\ParametersCopy\ParametersApp.cs" />
+    <Compile Include="Features\ParametersCopy\ViewModels\ListBoxParameter.cs" />
     <Compile Include="Features\ParametersCopy\ViewModels\ParametersVM.cs" />
     <Compile Include="Features\ParametersCopy\Views\ParametersWindow.xaml.cs">
       <DependentUpon>ParametersWindow.xaml</DependentUpon>

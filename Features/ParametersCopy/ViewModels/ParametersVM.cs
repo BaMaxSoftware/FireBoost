@@ -1,22 +1,50 @@
 ﻿using System;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace FireBoost.Features.ParametersCopy.ViewModels
 {
+    /// <summary></summary>
     public class ParametersVM
     {
+        /// <summary></summary>
         public string ActiveDocTitle { get; }
-        public string[] ProjectParameters { get; }
+        /// <summary></summary>
         public SharedParameter[] SharedParameters { get; }
+        /// <summary></summary>
+        public ObservableCollection<ListBoxParameter> Parameters { get; }
 
-        public ParametersVM(string title, string[] projectParams)
+
+        /// <summary></summary>
+        public ParametersVM(string title, string[] projectParams, (string, string)[] parameters)
         {
             ActiveDocTitle = title;
-            ProjectParameters = projectParams;
             if (true)
             {
                 SharedParameters = GetDefaultParameters();
             }
+            Parameters = new ObservableCollection<ListBoxParameter>();
+            
+            if (parameters == default || parameters.Length == 0)
+            {
+                foreach (var parameter in SharedParameters)
+                {
+                    Parameters.Add(new ListBoxParameter(parameter.Name, projectParams));
+                }
+            }
+            else
+            {
+                foreach (var parameter in SharedParameters)
+                {
+                    (string Name, string SelectedParameter) item = parameters.FirstOrDefault(x => x.Item1 == parameter.Name);
+
+                    Parameters.Add(item == default || item.SelectedParameter == null ?
+                        new ListBoxParameter(parameter.Name, projectParams) :
+                        new ListBoxParameter(item.Name, projectParams, item.SelectedParameter));
+                }
+            }
         }
+
 
         private SharedParameter[] GetDefaultParameters() => new SharedParameter[]
         {
@@ -49,11 +77,15 @@ namespace FireBoost.Features.ParametersCopy.ViewModels
             new SharedParameter(new Guid("fac76ca8-0f8a-4b5f-91ff-018aff5bad25"), "Внутренний диаметр отверстия"),
         };
 
+        /// <summary></summary>
         public class SharedParameter
-        { 
+        {
+            /// <summary></summary>
             public string Name { get; }
+            /// <summary></summary>
             public Guid GuidValue { get; }
 
+            /// <summary></summary>
             public SharedParameter(Guid guidValue, string name)
             {
                 Name = name;

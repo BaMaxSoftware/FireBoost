@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime;
 using System.Windows;
 using Autodesk.Revit.DB;
 using FireBoost.Features.Selection.ViewModels;
+using FireBoost.Features.Settings;
 using Newtonsoft.Json.Linq;
 
 namespace FireBoost.Features.Selection.Models
@@ -33,15 +35,17 @@ namespace FireBoost.Features.Selection.Models
         private XYZ _maxX, _minX;
         private XYZ _maxY, _minY;
         private XYZ _maxZ, _minZ;
-
+        private SettingsVM _settings;
+        
         private Document Doc { get; }
         private Wall SelectedWall { get; }
         private FamilyInstance[] _familyInstances;
         private Transactions _transactions;
         (int dimensions, int elevation) _roundTo;
 
-        public JoinWallOpenings(Document doc, Wall selectedWall, (int dimensions, int elevation) roundTo)
+        public JoinWallOpenings(SettingsVM settings, Document doc, Wall selectedWall, (int dimensions, int elevation) roundTo)
         {
+            _settings = settings;
             Doc = doc;
             SelectedWall = selectedWall;
             _options = new Options();
@@ -147,6 +151,10 @@ namespace FireBoost.Features.Selection.Models
 
             _transactions.ChangeInstanceElevation(ref newInstance, elevation);
             _transactions.ChangeJoinOpeningSize(Doc, ref newInstance, height, width);
+            if (_settings.Parameters != default && _settings.Parameters.Length > 0)
+            {
+                _transactions.ChangeProjectParams(newInstance, _settings.Parameters);
+            }
 
             using (Transaction t = new Transaction(Doc))
             {

@@ -241,11 +241,11 @@ namespace FireBoost.Features.Selection
 
             if (_viewModel.SelectedMepType.AllowCategories.Length == 0)
             {
-                new CreatorWithoutMEP(_viewModel, ActiveDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
+                new CreatorWithoutMEP(_viewModel, _settingsViewModel, ActiveDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
             }
             else
             {
-                new CreatorWithMEP(_viewModel, ActiveDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
+                new CreatorWithMEP(_viewModel, _settingsViewModel, ActiveDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
             }
         }
     }

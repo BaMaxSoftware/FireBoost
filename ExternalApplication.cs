@@ -33,25 +33,25 @@ namespace FireBoost
                     "SelectionButton",
                     "FireBoost.ExternalCommands.SelectionCommand",
                     "Подбор",
-                    "Создает экземпляры проходок, на основе выбранных исходных данных.",
+                    "Создание экземпляров огнестойких проходок, на основе выбранных исходных данных.",
                     Resources.PenetrationSeal4);
                 AddButton(
                     "SpecificationsButton",
                     "FireBoost.ExternalCommands.SpecificationsCommand",
                     "Спецификации",
-                    "Копирует спецификации из выбранного шаблона.",
+                    "Копирование спецификации из выбранного шаблона.",
                     Resources.Schedules);
                 AddButton(
                     "ParametersButton",
                     "FireBoost.ExternalCommands.ParametersCommand",
-                    "Параметры",
-                    "Описание...",
+                    "Настройки параметров",
+                    "Настройки копирования значений из общих параметров проходок в параметры проекта.",
                     Resources.Parameters);
                 AddButton(
                     "ManagerButton",
                     "FireBoost.ExternalCommands.ManagerCommand",
                     "Менеджер",
-                    "Открывает окно со списком всех существующих экземпляров проходок с отображением их статуса.",
+                    "Список всех существующих экземпляров огнестойких проходок с отображением их статуса.",
                     Resources.Manager);
             }
 

@@ -1,7 +1,7 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
-using Autodesk.Revit.DB;
+﻿using Autodesk.Revit.DB;
 using Newtonsoft.Json;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace FireBoost.Features.Settings
 {
@@ -13,6 +13,15 @@ namespace FireBoost.Features.Settings
         private string _rectangularWallPath;
         private string _rectangularFloorPath;
         private string _schedulesPath;
+        private (string Name, string SelectedParameter)[] _parameters;
+
+        /// <summary></summary>
+        [JsonProperty("Parameters")]
+        public (string Name, string SelectedParameter)[] Parameters
+        {
+            get => _parameters;
+            set => OnPropertyChanged(ref _parameters, value);
+        }
 
         /// <summary></summary>
         [JsonProperty("SchedulesPath")]

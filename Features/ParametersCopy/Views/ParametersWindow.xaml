@@ -5,10 +5,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:vm="clr-namespace:FireBoost.Features.ParametersCopy.ViewModels"
         mc:Ignorable="d"
-        Title="Копирование параметров"
-        Height="450" 
-        Width="800"
-        d:DataContext="{d:DesignInstance Type=vm:ParametersVM, IsDesignTimeCreatable=False}">
+        Title="Настройки параметров"
+        MinHeight="500" 
+        MinWidth="700"
+        Height="500" 
+        Width="700"
+        d:DataContext="{d:DesignInstance Type=vm:ParametersVM, IsDesignTimeCreatable=False}"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -18,36 +22,55 @@
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="90"/>
+            <RowDefinition Height="65"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="50"/>
         </Grid.RowDefinitions>
 
         <StackPanel Grid.Row="0">
             <StackPanel Orientation="Horizontal"
-                        Margin="10">
+                        Margin="10,5">
                 <TextBlock Text="Активный проект:" 
                            Margin="0,0,5,0"/>
                 <TextBlock Text="{Binding ActiveDocTitle}"
                            d:Text="Title"/>
             </StackPanel>
             <TextBlock Text="Копирование значений производится только в параметры проекта, которые относятся к категории «Обобщенные модели» - тип параметров должен быть «по экземпляру»."
+                       FontStyle="Italic"
                        TextWrapping="Wrap"
                        Margin="20,5"/>
         </StackPanel>
-        <ListBox Grid.Row="1"
-                  Margin="10,0"
-                 ItemsSource="{Binding SharedParameters}">
-            <ListBox.ItemTemplate>
+        <ListView x:Name="ParameterList"
+                  ItemContainerStyle="{DynamicResource ListViewItemContainerStyle1}"
+                  Margin="15"
+                  Grid.Row="1"
+                  BorderThickness="0"
+                  BorderBrush="{x:Null}"
+                  ItemsSource="{Binding Parameters}">
+            <ListView.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                        <ComboBox x:Name="ParameterSelector"
-                                  ItemsSource="{Binding ProjectParameters}"/>
-                    </StackPanel>
+                    <Grid Margin="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="20"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="{Binding Path=Name}"
+                                   Grid.Column="0"/>
+                        <TextBlock Text="=" 
+                                   Grid.Column="1"
+                                   FontWeight="UltraBlack"
+                                   FontSize="15"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding Path=ProjectParameters}"
+                                  Text="{Binding Path=SelectedParameter, Mode=TwoWay, Delay=1}"
+                                  Margin="0"
+                                  Grid.Column="2"/>
+                    </Grid>
                 </DataTemplate>
-            </ListBox.ItemTemplate>
-        </ListBox>
+            </ListView.ItemTemplate>
+        </ListView>
 
         <StackPanel HorizontalAlignment="Right"
                     Grid.Row="3"

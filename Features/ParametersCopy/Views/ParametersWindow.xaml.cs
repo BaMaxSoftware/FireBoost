@@ -12,12 +12,14 @@ namespace FireBoost.Features.ParametersCopy.Views
 
         private void ButtonCancel_Click(object sender, RoutedEventArgs e)
         {
-
+            DialogResult = false;
+            Close();
         }
 
         private void ButtonOK_Click(object sender, RoutedEventArgs e)
         {
-
+            DialogResult = true;
+            Close();
         }
     }
 }

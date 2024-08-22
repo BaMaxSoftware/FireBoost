@@ -10,15 +10,16 @@ namespace FireBoost.Features.Manager
 {
     internal class ManagerVM : INotifyPropertyChanged
     {
-        private Document _document;
-        public event PropertyChangedEventHandler PropertyChanged;
+        private readonly Document _document;
+        private ObservableCollection<SealingElement> _sealingCollection;
 
-        public ObservableCollection<SealingElement> _sealingCollection;
         public ObservableCollection<SealingElement> SealingCollection 
         { 
             get => _sealingCollection;
             private set => TryChangeProperty(ref _sealingCollection, value);
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         public ManagerVM(Document document) 
         {

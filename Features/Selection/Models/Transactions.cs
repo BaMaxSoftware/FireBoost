@@ -1,32 +1,33 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Structure;
 using FireBoost.Domain.Enums;
-using FireBoost.Domain;
 using System;
 using FireBoost.Domain.Data;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace FireBoost.Features.Selection.Models
 {
     internal class Transactions
     {
-        private Document _doc { get; }
+        private Document Doc { get; }
         private Parameters _parameters { get; set; }
 
         public Transactions(Document doc)
         {
             _parameters = new Parameters();
-            _doc = doc;
+            Doc = doc;
         }
 
         public TransactionStatus Regenerate()
         {
             TransactionStatus ret = TransactionStatus.Uninitialized;
-            using (Transaction t = new Transaction(_doc))
+            using (Transaction t = new Transaction(Doc))
             {
                 try
                 {
                     t.Start("Обновление активного проекта");
-                    _doc.Regenerate();
+                    Doc.Regenerate();
                     t.Commit();
                 }
                 catch
@@ -42,13 +43,13 @@ namespace FireBoost.Features.Selection.Models
         public TransactionStatus LoadFamilySymbol(string rfa, string typeName, ErrorsHandler errorsHandler, out FamilySymbol symbol)
         {
             TransactionStatus result = TransactionStatus.Uninitialized;
-            using (Transaction t = new Transaction(_doc))
+            using (Transaction t = new Transaction(Doc))
             {
                 try
                 {
                     t.Start("Загрузка семейства");
-                    bool b = _doc.LoadFamilySymbol(rfa, typeName, out symbol);
-                    _doc.Regenerate();
+                    bool b = Doc.LoadFamilySymbol(rfa, typeName, out symbol);
+                    Doc.Regenerate();
                     t.Commit();
                     result = t.GetStatus();
                 }
@@ -70,12 +71,12 @@ namespace FireBoost.Features.Selection.Models
         public FamilyInstance CreateNewInstance(FamilySymbol _familySymbol, XYZ locationPoint, Level level)
         {
             FamilyInstance instance = default;
-            using (Transaction t = new Transaction(_doc, "Компонент"))
+            using (Transaction t = new Transaction(Doc, "Компонент"))
             {
                 t.Start();
                 if (!_familySymbol.IsActive) _familySymbol.Activate();
 
-                instance = _doc.Create.NewFamilyInstance(
+                instance = Doc.Create.NewFamilyInstance(
                     locationPoint,
                     _familySymbol,
                     level,
@@ -99,14 +100,14 @@ namespace FireBoost.Features.Selection.Models
         }
 
         /// <summary></summary>
-        public void ChangeInstanceElevation(ref FamilyInstance instance, double elev)
+        public void ChangeInstanceElevation(ref FamilyInstance instance, double elevation)
         {
             if (instance.get_Parameter(BuiltInParameter.INSTANCE_FREE_HOST_OFFSET_PARAM) is Parameter hostOffset)
             {
-                using (Transaction t = new Transaction(_doc, "Редактировать атрибуты элемента"))
+                using (Transaction t = new Transaction(Doc, "Редактировать атрибуты элемента"))
                 {
                     t.Start();
-                    hostOffset.Set(elev);
+                    hostOffset.Set(elevation);
                     t.Commit();
                 }
             }
@@ -131,9 +132,9 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeOpeningsDimensions(OpeningShape shape, ref FamilyInstance instance, double _height, double _width, double _diameter)
+        public void ChangeOpeningsDimensions(OpeningShape shape, ref FamilyInstance instance, double height, double width, double diameter)
         {
-            using (Transaction t = new Transaction(_doc))
+            using (Transaction t = new Transaction(Doc))
             {
                 try
                 {
@@ -141,11 +142,11 @@ namespace FireBoost.Features.Selection.Models
                     switch (shape)
                     {
                         case OpeningShape.Reachtangle:
-                            instance.get_Parameter(_parameters.OpeningHeight).Set(_height);
-                            instance.get_Parameter(_parameters.OpeningWidth).Set(_width);
+                            instance.get_Parameter(_parameters.OpeningHeight).Set(height);
+                            instance.get_Parameter(_parameters.OpeningWidth).Set(width);
                             break;
                         case OpeningShape.Round:
-                            instance.get_Parameter(_parameters.OpeningDiameter).Set(_diameter);
+                            instance.get_Parameter(_parameters.OpeningDiameter).Set(diameter);
                             break;
                     }
                     t.Commit();
@@ -160,7 +161,7 @@ namespace FireBoost.Features.Selection.Models
 
         public void RotateInstance(ref FamilyInstance instance, Line axis, double angle)
         {
-            using (Transaction t = new Transaction(_doc))
+            using (Transaction t = new Transaction(Doc))
             {
                 try
                 {
@@ -179,7 +180,7 @@ namespace FireBoost.Features.Selection.Models
         public void Move(ref FamilyInstance instance, XYZ vector)
         {
             
-            using (Transaction t = new Transaction(_doc))
+            using (Transaction t = new Transaction(Doc))
             {
                 try
                 {
@@ -197,7 +198,7 @@ namespace FireBoost.Features.Selection.Models
 
         public void ChangeOtherParams(ref FamilyInstance newInstance, string duration, string minutes, SealingMaterials material)
         {
-            using (Transaction t = new Transaction(_doc))
+            using (Transaction t = new Transaction(Doc))
             {
                 t.Start("Редактировать атрибуты элемента");
                 Parameter durationParameter = newInstance.get_Parameter(new Guid("ea2d4cab-8cba-43f6-bcfa-72003c13fd65"));
@@ -216,6 +217,79 @@ namespace FireBoost.Features.Selection.Models
                     }
                 }
                 t.Commit();
+            }
+        }
+
+        public void ChangeProjectParams(FamilyInstance instance, (string Name, string SelectedParameter)[] parametersArr)
+        {
+            Parameter p1, p2;
+            Transaction t;
+            var statuses = new List<TransactionStatus>();
+            using (TransactionGroup tg = new TransactionGroup(Doc))
+            {
+                tg.Start();
+
+                foreach (var (Name, SelectedParameter) in parametersArr)
+                {
+                    if (SelectedParameter == null)
+                        continue;
+
+                    p1 = instance.LookupParameter(Name);
+                    if (p1 == null || p1.IsReadOnly)
+                        continue;
+
+                    p2 = instance.LookupParameter(SelectedParameter);
+                    if (p2 == null || p2.IsReadOnly)
+                        continue;
+
+                    if (p1.StorageType != p2.StorageType)
+                        continue;
+
+                    using (t = new Transaction(Doc, "Редактировать атрибуты элемента"))
+                    {
+                        try
+                        {
+                            t.Start();
+                            switch (p1.StorageType)
+                            {
+                                case StorageType.Double:
+                                    p2.Set(p1.AsDouble());
+                                    break;
+                                case StorageType.ElementId:
+                                    p2.Set(p1.AsElementId());
+                                    break;
+                                case StorageType.Integer:
+                                    p2.Set(p1.AsInteger());
+                                    break;
+                                case StorageType.String:
+                                    p2.Set(p1.AsString());
+                                    break;
+                                default: t.RollBack(); break;
+                            }
+                            if (!t.HasEnded())
+                            { 
+                                t.Commit();
+                            }
+                        }
+                        catch
+                        {
+                            if (t.HasStarted())
+                            {
+                                t.RollBack();
+                            }
+                        }
+                        statuses.Add(t.GetStatus());
+                    }    
+                }
+
+                if (statuses.Any(x => x == TransactionStatus.Committed))
+                {
+                    tg.Assimilate();
+                }
+                else
+                {
+                    tg.RollBack();
+                }
             }
         }
 

@@ -2,36 +2,36 @@
 using Autodesk.Revit.DB.Electrical;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
-using Autodesk.Revit.UI;
-using FireBoost.Domain.Data;
 using FireBoost.Domain.Entities;
 using FireBoost.Domain.Enums;
 using FireBoost.Features.Selection.ViewModels;
+using FireBoost.Features.Settings;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace FireBoost.Features.Selection.Models
 {
     internal class CreatorBase
     {
-        public FamilySymbol _familySymbol { get; }
-        public SelectionVM _viewModel { get; }
+        public SettingsVM SettingsViewModel { get; }
+        public FamilySymbol FamilySymbol { get; }
+        public SelectionVM SelectionViewModel { get; }
         public Document ActiveDoc { get; }
-        public List<FamilyInstance> _familyInstances { get; set; } = new List<FamilyInstance>();
+        public List<FamilyInstance> FamilyInstanceList { get; set; } = new List<FamilyInstance>();
         public Transactions Transactions { get; }
-        public (Element Element, Transform Transform, XYZ GlobalPoint) _currentHost { get; set; }
-        public (Element Instance, Transform Transform) _currentElement { get; set; }
+        public (Element Element, Transform Transform, XYZ GlobalPoint) CurrentHost { get; set; }
+        public (Element Instance, Transform Transform) CurrentElement { get; set; }
 
         public (double Height, double Width, double Diameter) Dimensions { get; set; }
         public (int dimensions, int elevation) RoundTo { get; set; }
         public double Offset { get; set; }
-        public CreatorBase(SelectionVM viewModel, Document activeDoc, FamilySymbol familySymbol, (double Height, double Width, double Diameter) dimensions, double offset, (int dimensions, int elevation) roundTo)
+        public CreatorBase(SelectionVM viewModel, SettingsVM settingsViewModel, Document activeDoc, FamilySymbol familySymbol, (double Height, double Width, double Diameter) dimensions, double offset, (int dimensions, int elevation) roundTo)
         {
-            _viewModel = viewModel;
+            SelectionViewModel = viewModel;
+            SettingsViewModel = settingsViewModel;
             ActiveDoc = activeDoc;
-            _familySymbol = familySymbol;
+            FamilySymbol = familySymbol;
             Transactions = new Transactions(ActiveDoc);
             Dimensions = dimensions;
             Offset = offset;
@@ -40,20 +40,20 @@ namespace FireBoost.Features.Selection.Models
 
         public (Element, Transform, XYZ)[] CollectHosts()
         {
-            (Element, Transform, XYZ)[] elements = new (Element, Transform, XYZ)[_viewModel.DocHostReferences.Count + _viewModel.LinkHostReferences.Count];
+            (Element, Transform, XYZ)[] elements = new (Element, Transform, XYZ)[SelectionViewModel.DocHostReferences.Count + SelectionViewModel.LinkHostReferences.Count];
             Element element;
             int count = 0;
-            if (_viewModel.DocHostReferences.Count > 0)
+            if (SelectionViewModel.DocHostReferences.Count > 0)
             {
-                foreach (Reference host in _viewModel.DocHostReferences)
+                foreach (Reference host in SelectionViewModel.DocHostReferences)
                 {
                     elements[count] = (ActiveDoc.GetElement(host.ElementId), null, host.GlobalPoint);
                     count++;
                 }
             }
-            if (_viewModel.LinkHostReferences.Count > 0)
+            if (SelectionViewModel.LinkHostReferences.Count > 0)
             {
-                foreach (Reference host in _viewModel.LinkHostReferences)
+                foreach (Reference host in SelectionViewModel.LinkHostReferences)
                 {
                     element = ActiveDoc.GetElement(host.ElementId);
                     if (element is RevitLinkInstance link && host.LinkedElementId != ElementId.InvalidElementId)
@@ -91,32 +91,32 @@ namespace FireBoost.Features.Selection.Models
 
         public void ChangeSize(ref FamilyInstance newInstance, double slopeOffset = 0)
         {
-            if (!_viewModel.IsDimensionsManually)
+            if (!SelectionViewModel.IsDimensionsManually)
             {
-                if (_currentElement != default)
+                if (CurrentElement != default)
                 {
-                    var result = GetDimensions(_currentElement.Instance);
+                    var result = GetDimensions(CurrentElement.Instance);
 
                     if (result == (0, 0, 0))
                         return;
 
-                    var parameters = new InstanceParameters(_currentElement.Instance);
+                    var parameters = new InstanceParameters(CurrentElement.Instance);
                     if (parameters.IsValid)
                     {
-                        switch (_viewModel.SelectedShape.Shape)
+                        switch (SelectionViewModel.SelectedShape.Shape)
                         {
                             case OpeningShape.Reachtangle:
 
                                 if (parameters.Diameter == BuiltInParameter.INVALID)
                                 {
                                     Dimensions = (
-                                        _currentElement.Instance.get_Parameter(parameters.Height).AsDouble() + Offset + slopeOffset,
-                                        _currentElement.Instance.get_Parameter(parameters.Width).AsDouble() + Offset,
+                                        CurrentElement.Instance.get_Parameter(parameters.Height).AsDouble() + Offset + slopeOffset,
+                                        CurrentElement.Instance.get_Parameter(parameters.Width).AsDouble() + Offset,
                                         0);
                                 }
                                 else
                                 {
-                                    double size = _currentElement.Instance.get_Parameter(parameters.Diameter).AsDouble() + Offset;
+                                    double size = CurrentElement.Instance.get_Parameter(parameters.Diameter).AsDouble() + Offset;
                                     Dimensions = (
                                         size + Offset + slopeOffset,
                                         size + Offset,
@@ -148,7 +148,7 @@ namespace FireBoost.Features.Selection.Models
                 }
             }
 
-            Transactions.ChangeOpeningsDimensions(_viewModel.SelectedShape.Shape, ref newInstance,
+            Transactions.ChangeOpeningsDimensions(SelectionViewModel.SelectedShape.Shape, ref newInstance,
                 Dimensions.Height,
                 Dimensions.Width,
                 Dimensions.Diameter);
@@ -158,32 +158,32 @@ namespace FireBoost.Features.Selection.Models
                 Transactions.RotateInstance(ref newInstance, rotation.Axis, rotation.Angle);
             }
 
-            if (_currentHost.Element is Wall wall)
+            if (CurrentHost.Element is Wall wall)
             {
-                Transactions.Move(ref newInstance, (_currentHost.Transform == null ? wall.Orientation : _currentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
+                Transactions.Move(ref newInstance, (CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
             }
-            else if (_currentHost.Element is Floor floor)
+            else if (CurrentHost.Element is Floor floor)
             {
                 Transactions.Move(ref newInstance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
             }
             
             Transactions.ChangeOtherParams(ref newInstance,
-                _viewModel.SelectedFireResistance.Depth.ToString(),
-                _viewModel.SelectedFireResistance.Minutes.ToString(),
-                _viewModel.SelectedMaterial.SealingMaterialType);
+                SelectionViewModel.SelectedFireResistance.Depth.ToString(),
+                SelectionViewModel.SelectedFireResistance.Minutes.ToString(),
+                SelectionViewModel.SelectedMaterial.SealingMaterialType);
         }
 
         private bool TryGetRotationParams(FamilyInstance instance, out (Line Axis, double Angle) rotation)
         {
             XYZ orient = null;
-            switch (_currentHost.Element)
+            switch (CurrentHost.Element)
             {
                 case Wall wall:
-                    orient = _currentHost.Transform == null ? wall.Orientation : _currentHost.Transform.OfVector(wall.Orientation);
+                    orient = CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation);
                     break;
 
                 case Floor _:
-                    if (_currentElement.Instance != null && _currentElement.Instance is MEPCurve mepCurve)
+                    if (CurrentElement.Instance != null && CurrentElement.Instance is MEPCurve mepCurve)
                     {
                         foreach (object c in mepCurve.ConnectorManager.Connectors)
                         {
@@ -192,9 +192,9 @@ namespace FireBoost.Features.Selection.Models
                                 if (connector.CoordinateSystem.BasisZ.Z > 0)
                                 {
                                     orient = connector.CoordinateSystem.BasisY;
-                                    if (_currentElement.Transform != null)
+                                    if (CurrentElement.Transform != null)
                                     {
-                                        orient = _currentElement.Transform.OfVector(orient);
+                                        orient = CurrentElement.Transform.OfVector(orient);
                                     }
                                     break;
                                 }
@@ -265,6 +265,14 @@ namespace FireBoost.Features.Selection.Models
             }
 
             return result;
+        }
+
+        public void ChangeProjectParameters(FamilyInstance instance)
+        {
+            if (SettingsViewModel.Parameters != default && SettingsViewModel.Parameters.Length > 0)
+            {
+                Transactions.ChangeProjectParams(instance, SettingsViewModel.Parameters);
+            }
         }
 
         public void ChangeInstanceElevation(ref FamilyInstance instance, double elevation)
