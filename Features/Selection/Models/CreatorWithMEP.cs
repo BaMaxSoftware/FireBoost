@@ -114,9 +114,9 @@ namespace FireBoost.Features.Selection.Models
                                         currentLevel);
                             if (newInstance == default) continue;
 
-                            ChangeInstanceElevation(ref newInstance, elevation);
-                            ChangeSize(ref newInstance, slopeOffset);
-                            Transactions.ChangeSelectedParams(ActiveDoc, _sizeChanger.SetOtherParams(ref newInstance, CurrentElement.Instance as MEPCurve, SelectionViewModel.SelectedShape.Shape));
+                            ChangeInstanceElevation(newInstance, elevation);
+                            ChangeSize(newInstance, slopeOffset);
+                            Transactions.ChangeSelectedParams(ActiveDoc, _sizeChanger.SetOtherParams(newInstance, CurrentElement.Instance as MEPCurve, SelectionViewModel.SelectedShape.Shape));
                             ChangeProjectParameters(newInstance);
 
                             

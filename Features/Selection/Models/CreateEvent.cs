@@ -5,6 +5,7 @@ using FireBoost.Features.Json;
 using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Selection.Views;
 using FireBoost.Features.Settings;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -13,20 +14,19 @@ namespace FireBoost.Features.Selection.Models
 {
     internal class CreateEvent : IExternalEventHandler
     {
+        private readonly ErrorsHandler _errorsHandler;
+        private readonly JsonHandler _json;
         private readonly MainWindow _mainWindow;
         private readonly SelectionVM _viewModel;
-        private readonly JsonHandler _json;
-        private readonly ErrorsHandler _errorsHandler;
-        private Document _activeDoc;
 
+        private double _offset;
+        private Document _activeDoc;
+        private FamilySymbol _familySymbol;
         private SettingsVM _settingsViewModel;
         private SettingsWindow _settingsWindow;
-        
-        private FamilySymbol _familySymbol;
-        private (string, string) _familyName;
         private (double Height, double Width, double Diameter) _dimensions = default;
-        private (int dimensions, int elevation) _roundTo;
-        private double _offset;
+        private (string Name, string TypeName) _familyName;
+        private (int Dimensions, int Elevation) _roundTo;
 
         public CreateEvent(
             MainWindow mainWindow,
@@ -53,7 +53,8 @@ namespace FireBoost.Features.Selection.Models
 
         private void Start()
         {
-            _mainWindow.Hide();
+            _mainWindow.Visibility = System.Windows.Visibility.Hidden;
+
             _activeDoc = _viewModel.GetActiveUIEvent.ActiveDocument;
 
             if (_viewModel.IsValidData())
@@ -144,8 +145,8 @@ namespace FireBoost.Features.Selection.Models
                     }
                 }
             }
-
-            _mainWindow.Show();
+            
+            _mainWindow.Visibility = System.Windows.Visibility.Visible;
         }
 
         private string[] GetFiles()

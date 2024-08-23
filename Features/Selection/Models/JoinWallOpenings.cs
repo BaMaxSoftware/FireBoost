@@ -149,8 +149,8 @@ namespace FireBoost.Features.Selection.Models
                 elevation = RoundToMM(_roundTo.elevation, elevation);
             }
 
-            _transactions.ChangeInstanceElevation(ref newInstance, elevation);
-            _transactions.ChangeJoinOpeningSize(Doc, ref newInstance, height, width);
+            _transactions.ChangeInstanceElevation(newInstance, elevation);
+            _transactions.ChangeJoinOpeningSize(Doc, newInstance, height, width);
 
             if (_currentHost.Element is Wall wall)
             {

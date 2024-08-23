@@ -1,6 +1,4 @@
-﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
-using FireBoost.Domain.Data;
+﻿using Autodesk.Revit.UI;
 using FireBoost.Features.Json;
 using FireBoost.Features.Selection.Models;
 using FireBoost.Features.Selection.ViewModels;
@@ -13,15 +11,13 @@ namespace FireBoost.Features.Selection
     public class SelectionApp
     {
         private readonly ErrorsHandler _errorsHandler;
-        private readonly SelectionVM _viewModel;
+        private readonly ExternalEvent _externalEvent;
         private readonly JsonHandler _json;
+        private readonly MainWindow _mainWindow;
+        private readonly SelectionVM _viewModel;
 
         private SettingsVM _settingsViewModel;
         private SettingsWindow _settingsWindow;
-        private MainWindow _mainWindow;
-        private ExternalEvent _externalEvent;
-        /// <summary></summary>
-        private Document _activeDoc;
         
         /// <summary></summary>
         public SelectionApp()
@@ -43,7 +39,10 @@ namespace FireBoost.Features.Selection
         }
 
         /// <summary></summary>
-        public void ShowWindow() => _mainWindow.Show();
+        public void ShowWindow()
+        {
+            _mainWindow.Show();
+        }
 
         /// <summary></summary>
         public void SettingsShowDialog()

@@ -25,13 +25,9 @@ namespace FireBoost.Features.Selection.Views
 
         private void ButtonSettings_Click(object sender, RoutedEventArgs e) => _vm.SettingsShowDialog();
 
-        private void Window_Loaded(object sender, RoutedEventArgs e) => _vm.GetActiveUIDocument();
-
-
-        public void InitHwnd()
+        private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            var helper = new WindowInteropHelper(this);
-            helper.EnsureHandle();
+            _vm.GetActiveUIDocument();
         }
     }
 }

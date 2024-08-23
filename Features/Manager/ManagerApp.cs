@@ -17,7 +17,7 @@ namespace FireBoost.Features.Manager
             { 
                 DataContext = new ManagerVM(Document)
             };
-
+            
             _view.Show();
         }
     }

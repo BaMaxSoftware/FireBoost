@@ -100,7 +100,7 @@ namespace FireBoost.Features.Selection.Models
         }
 
         /// <summary></summary>
-        public void ChangeInstanceElevation(ref FamilyInstance instance, double elevation)
+        public void ChangeInstanceElevation(FamilyInstance instance, double elevation)
         {
             if (instance.get_Parameter(BuiltInParameter.INSTANCE_FREE_HOST_OFFSET_PARAM) is Parameter hostOffset)
             {
@@ -113,7 +113,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeJoinOpeningSize(Document doc, ref FamilyInstance newInstance, double height, double width)
+        public void ChangeJoinOpeningSize(Document doc, FamilyInstance newInstance, double height, double width)
         {
             using (Transaction t = new Transaction(doc))
             {
@@ -132,7 +132,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeOpeningsDimensions(SealingShapeType shape, ref FamilyInstance instance, double height, double width, double diameter)
+        public void ChangeOpeningsDimensions(SealingShapeType shape, FamilyInstance instance, double height, double width, double diameter)
         {
             using (Transaction t = new Transaction(Doc))
             {
@@ -159,7 +159,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void RotateInstance(ref FamilyInstance instance, Line axis, double angle)
+        public void RotateInstance(FamilyInstance instance, Line axis, double angle)
         {
             using (Transaction t = new Transaction(Doc))
             {
@@ -177,9 +177,8 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void Move(ref FamilyInstance instance, XYZ vector)
+        public void Move(FamilyInstance instance, XYZ vector)
         {
-            
             using (Transaction t = new Transaction(Doc))
             {
                 try
@@ -196,7 +195,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeOtherParams(ref FamilyInstance newInstance, string duration, string minutes, SealingMaterialType material)
+        public void ChangeOtherParams(FamilyInstance newInstance, string duration, string minutes, SealingMaterialType material)
         {
             using (Transaction t = new Transaction(Doc))
             {

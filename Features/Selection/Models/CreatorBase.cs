@@ -26,6 +26,8 @@ namespace FireBoost.Features.Selection.Models
         public (double Height, double Width, double Diameter) Dimensions { get; set; }
         public (int dimensions, int elevation) RoundTo { get; set; }
         public double Offset { get; set; }
+
+
         public CreatorBase(SelectionVM viewModel, SettingsVM settingsViewModel, Document activeDoc, FamilySymbol familySymbol, (double Height, double Width, double Diameter) dimensions, double offset, (int dimensions, int elevation) roundTo)
         {
             SelectionViewModel = viewModel;
@@ -37,6 +39,7 @@ namespace FireBoost.Features.Selection.Models
             Offset = offset;
             RoundTo = roundTo;
         }
+
 
         public (Element, Transform, XYZ)[] CollectHosts()
         {
@@ -89,7 +92,7 @@ namespace FireBoost.Features.Selection.Models
         }
 
 
-        public void ChangeSize(ref FamilyInstance newInstance, double slopeOffset = 0)
+        public void ChangeSize(FamilyInstance newInstance, double slopeOffset = 0)
         {
             if (!SelectionViewModel.IsDimensionsManually)
             {
@@ -148,29 +151,34 @@ namespace FireBoost.Features.Selection.Models
                 }
             }
 
-            Transactions.ChangeOpeningsDimensions(SelectionViewModel.SelectedShape.Shape, ref newInstance,
+            Transactions.ChangeOpeningsDimensions(SelectionViewModel.SelectedShape.Shape, newInstance,
                 Dimensions.Height,
                 Dimensions.Width,
                 Dimensions.Diameter);
 
             if (TryGetRotationParams(newInstance, out (Line Axis, double Angle) rotation))
             { 
-                Transactions.RotateInstance(ref newInstance, rotation.Axis, rotation.Angle);
+                Transactions.RotateInstance(newInstance, rotation.Axis, rotation.Angle);
             }
 
-            if (CurrentHost.Element is Wall wall)
-            {
-                //Transactions.Move(ref newInstance, (CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
-            }
-            else if (CurrentHost.Element is Floor floor)
-            {
-                //Transactions.Move(ref newInstance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
-            }
             
-            Transactions.ChangeOtherParams(ref newInstance,
+            
+            Transactions.ChangeOtherParams(newInstance,
                 SelectionViewModel.SelectedFireResistance.Depth.ToString(),
                 SelectionViewModel.SelectedFireResistance.Minutes.ToString(),
                 SelectionViewModel.SelectedMaterial.SealingMaterialType);
+        }
+
+        public void Move(FamilyInstance instance)
+        {
+            if (CurrentHost.Element is Wall wall)
+            {
+                Transactions.Move(instance, (CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
+            }
+            else if (CurrentHost.Element is Floor floor)
+            {
+                Transactions.Move(instance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
+            }
         }
 
         private bool TryGetRotationParams(FamilyInstance instance, out (Line Axis, double Angle) rotation)
@@ -275,13 +283,13 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeInstanceElevation(ref FamilyInstance instance, double elevation)
+        public void ChangeInstanceElevation(FamilyInstance instance, double elevation)
         {
             if (RoundTo.elevation != 0)
             {
                 elevation = RoundToMM(RoundTo.elevation, elevation);
             }
-            Transactions.ChangeInstanceElevation(ref instance, elevation);
+            Transactions.ChangeInstanceElevation(instance, elevation);
         }
 
         public double RoundToMM(int roundTo, double value)

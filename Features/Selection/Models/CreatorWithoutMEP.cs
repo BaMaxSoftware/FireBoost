@@ -30,9 +30,10 @@ namespace FireBoost.Features.Selection.Models
                 if (host.hostElement == default || !host.hostElement.IsValidObject || host.hostElement is FamilyInstance) continue;
                 Level level = GetNearestLevel(host.globalPoint.Z);
                 instance = Transactions.CreateNewInstance(FamilySymbol, host.globalPoint, level);
-                ChangeInstanceElevation(ref instance, host.globalPoint.Z - level.Elevation);
-                ChangeSize(ref instance);
+                ChangeInstanceElevation(instance, host.globalPoint.Z - level.Elevation);
+                ChangeSize(instance);
                 ChangeProjectParameters(instance);
+                Move(instance);
             }
         }
     }

@@ -12,6 +12,8 @@ using Autodesk.Revit.UI.Selection;
 using FireBoost.Domain.Data;
 using FireBoost.Domain.Entities;
 using FireBoost.Features.Selection.Models;
+using FireBoost.Features.Selection.Views;
+using WPFVisibility = System.Windows.Visibility;
 
 namespace FireBoost.Features.Selection.ViewModels
 {
@@ -284,7 +286,8 @@ namespace FireBoost.Features.Selection.ViewModels
         /// <summary></summary>
         public ICommand DocElementSelection => _docElementSelection ?? (_docElementSelection = new VMCommand(obj =>
         {
-            _selectionApp.GetMainWindow().Hide();
+            var view = _selectionApp.GetMainWindow().Visibility;
+            view = WPFVisibility.Hidden;
             if (CheckMepTypes())
             {
                 DocElementReferences = _pickObjects.Select(
@@ -294,13 +297,14 @@ namespace FireBoost.Features.Selection.ViewModels
                     GetActiveUIEvent.ActiveUIDocument,
                     false);
             }
-            _selectionApp.GetMainWindow().Show();
+            view = WPFVisibility.Visible;
         }));
 
         /// <summary></summary>
         public ICommand DocHostSelection => _docHostSelection ?? (_docHostSelection = new VMCommand(obj =>
         {
-            _selectionApp.GetMainWindow().Hide();
+            var view = _selectionApp.GetMainWindow().Visibility;
+            view = WPFVisibility.Hidden;
             if (CheckHosts())
             {
                 DocHostReferences = _pickObjects.Select(
@@ -310,13 +314,14 @@ namespace FireBoost.Features.Selection.ViewModels
                     GetActiveUIEvent.ActiveUIDocument,
                     true);
             }
-            _selectionApp.GetMainWindow().Show();
+            view = WPFVisibility.Visible;
         }));
 
         /// <summary></summary>
         public ICommand LinkElementSelection => _linkElementSelection ?? (_linkElementSelection = new VMCommand(obj =>
         {
-            _selectionApp.GetMainWindow().Hide();
+            var view = _selectionApp.GetMainWindow().Visibility;
+            view = WPFVisibility.Hidden;
             if (CheckMepTypes())
             {
                 LinkElementReferences = _pickObjects.Select(
@@ -326,13 +331,14 @@ namespace FireBoost.Features.Selection.ViewModels
                     GetActiveUIEvent.ActiveUIDocument,
                     false);
             }
-            _selectionApp.GetMainWindow().Show();
+            view = WPFVisibility.Visible;
         }));
 
         /// <summary></summary>
         public ICommand LinkHostSelection => _linkHostSelection ?? (_linkHostSelection = new VMCommand(obj =>
         {
-            _selectionApp.GetMainWindow().Hide();
+            var view = _selectionApp.GetMainWindow().Visibility;
+            view = WPFVisibility.Hidden;
             if (CheckHosts())
             {
                 LinkHostReferences = _pickObjects.Select(
@@ -342,7 +348,7 @@ namespace FireBoost.Features.Selection.ViewModels
                     GetActiveUIEvent.ActiveUIDocument,
                     true);
             }
-            _selectionApp.GetMainWindow().Show();
+            view = WPFVisibility.Visible;
         }));
         #endregion Properties
 

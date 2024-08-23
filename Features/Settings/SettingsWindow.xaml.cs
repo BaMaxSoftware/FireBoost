@@ -10,10 +10,7 @@ namespace FireBoost.Features.Settings
     public partial class SettingsWindow : Window
     {
         /// <summary></summary>
-        public SettingsWindow()
-        {
-            InitializeComponent();
-        }
+        public SettingsWindow() => InitializeComponent();
 
         private void ButtonOK_Click(object sender, RoutedEventArgs e)
         {

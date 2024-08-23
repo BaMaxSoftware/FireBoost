@@ -24,7 +24,7 @@ namespace FireBoost.Features.Selection.Models
         private InstanceParameters _instanceParameters;
 
         /// <summary></summary>
-        public (Parameter, double)[] SetOtherParams(ref FamilyInstance newInstance, MEPCurve element, SealingShapeType shape)
+        public (Parameter, double)[] SetOtherParams(FamilyInstance newInstance, MEPCurve element, SealingShapeType shape)
         {
             (Parameter, double)[] result = null;
             _instanceParameters = new InstanceParameters(element);
