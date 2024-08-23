@@ -105,7 +105,7 @@ namespace FireBoost.Features.Selection.Models
                     {
                         switch (SelectionViewModel.SelectedShape.Shape)
                         {
-                            case OpeningShape.Reachtangle:
+                            case SealingShapeType.Reachtangle:
 
                                 if (parameters.Diameter == BuiltInParameter.INVALID)
                                 {
@@ -123,7 +123,7 @@ namespace FireBoost.Features.Selection.Models
                                         0);
                                 }
                                 break;
-                            case OpeningShape.Round:
+                            case SealingShapeType.Round:
                                 Dimensions = (
                                         0,
                                         0,

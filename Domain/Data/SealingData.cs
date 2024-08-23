@@ -145,29 +145,29 @@ namespace FireBoost.Domain.Data
         };
 
         /// <summary></summary>
-        public SealingMaterial[] CreateMaterialsArray() => new SealingMaterial[]
+        public Entities.SealingMaterial[] CreateMaterialsArray() => new Entities.SealingMaterial[]
         {
-            new SealingMaterial("П", "Пена", SealingMaterials.P),
-            new SealingMaterial("М", "Минеральная плита", SealingMaterials.M),
-            new SealingMaterial("ПМ", "Пена и минеральная плита", SealingMaterials.PM)
+            new Entities.SealingMaterial("П", "Пена", SealingMaterialType.P),
+            new Entities.SealingMaterial("М", "Минеральная плита", SealingMaterialType.M),
+            new Entities.SealingMaterial("ПМ", "Пена и минеральная плита", SealingMaterialType.PM)
         };
 
         /// <summary></summary>
-        public SealingStructuralDesign[] CreateStructuralDesignsArray() => new SealingStructuralDesign[]
+        public Entities.SealingStructuralDesign[] CreateStructuralDesignsArray() => new SealingStructuralDesign[]
         {
-            new SealingStructuralDesign("(1)", "Односторонняя заделка проходки", SealingStructuralDesigns.OneSide),
-            new SealingStructuralDesign("(2)", "Двухсторонняя заделка проходки", SealingStructuralDesigns.TwoSided),
-            new SealingStructuralDesign("(М)", "С установкой кабельных разделительных металлорешеток", SealingStructuralDesigns.M),
-            new SealingStructuralDesign("(Т)", "С установкой узла увеличения глубины проемов", SealingStructuralDesigns.T),
-            new SealingStructuralDesign("(Э)", "Эксплуатируемая сборно-разборная заделка проходки", SealingStructuralDesigns.E),
-            new SealingStructuralDesign("(Р)", "Резервная заделка проходки без коммуникаций", SealingStructuralDesigns.R)
+            new Entities.SealingStructuralDesign("(1)", "Односторонняя заделка проходки", SealingStructuralDesignType.OneSide),
+            new Entities.SealingStructuralDesign("(2)", "Двухсторонняя заделка проходки", SealingStructuralDesignType.TwoSided),
+            new Entities.SealingStructuralDesign("(М)", "С установкой кабельных разделительных металлорешеток", SealingStructuralDesignType.M),
+            new Entities.SealingStructuralDesign("(Т)", "С установкой узла увеличения глубины проемов", SealingStructuralDesignType.T),
+            new Entities.SealingStructuralDesign("(Э)", "Эксплуатируемая сборно-разборная заделка проходки", SealingStructuralDesignType.E),
+            new Entities.SealingStructuralDesign("(Р)", "Резервная заделка проходки без коммуникаций", SealingStructuralDesignType.R)
         };
 
         /// <summary></summary>
         public SealingShape[] CreateShapesArray() => new SealingShape[]
         {
-            new SealingShape("Круг", OpeningShape.Round),
-            new SealingShape("Прямоугольник", OpeningShape.Reachtangle),
+            new SealingShape("Круг", SealingShapeType.Round),
+            new SealingShape("Прямоугольник", SealingShapeType.Reachtangle),
         };
     }
 }

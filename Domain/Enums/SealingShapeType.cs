@@ -1,7 +1,7 @@
 ﻿namespace FireBoost.Domain.Enums
 {
     /// <summary></summary>
-    public enum OpeningShape
+    public enum SealingShapeType
     {
         /// <summary></summary>
         Auto,

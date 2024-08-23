@@ -115,9 +115,9 @@
     <Compile Include="Domain\Entities\SealingShape.cs" />
     <Compile Include="Domain\Entities\SealingStructuralDesign.cs" />
     <Compile Include="Domain\Entities\VMCommand.cs" />
-    <Compile Include="Domain\Enums\OpeningShape.cs" />
-    <Compile Include="Domain\Enums\SealingMaterials.cs" />
-    <Compile Include="Domain\Enums\SealingStructuralDesigns.cs" />
+    <Compile Include="Domain\Enums\SealingShapeType.cs" />
+    <Compile Include="Domain\Enums\SealingMaterialType.cs" />
+    <Compile Include="Domain\Enums\SealingStructuralDesignType.cs" />
     <Compile Include="ExternalApplication.cs" />
     <Compile Include="ExternalCommands\ManagerCommand.cs" />
     <Compile Include="ExternalCommands\ParametersCommand.cs" />

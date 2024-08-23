@@ -1,7 +1,7 @@
 ﻿namespace FireBoost.Domain.Enums
 {
     /// <summary></summary>
-    public enum SealingMaterials
+    public enum SealingMaterialType
     {
         /// <summary></summary>
         Unknown,

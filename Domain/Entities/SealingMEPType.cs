@@ -17,7 +17,7 @@ namespace FireBoost.Domain.Entities
         /// <summary></summary>
         public BuiltInCategory[] AllowCategories { get; }
         /// <summary></summary>
-        public OpeningShape[] OpeningShapes { get; }
+        public SealingShapeType[] OpeningShapes { get; }
         /// <summary></summary>
         public string[] Materials { get; }
         /// <summary></summary>
@@ -33,9 +33,5 @@ namespace FireBoost.Domain.Entities
             SubType = subType;
             AllowCategories = allowCategories;
         }
-
-
-        /// <summary></summary>
-        public override string ToString() => SubType;
     }
 }

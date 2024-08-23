@@ -103,7 +103,7 @@ namespace FireBoost.Features.Selection
                             _offset = _offset * 0.0032808d * 2;
                             if (_viewModel.IsDimensionsManually)
                             {
-                                if (_viewModel.SelectedShape.Shape == OpeningShape.Round)
+                                if (_viewModel.SelectedShape.Shape == SealingShapeType.Round)
                                 {
                                     if (double.TryParse(_viewModel.Diameter, out _dimensions.Diameter))
                                     {
@@ -181,7 +181,7 @@ namespace FireBoost.Features.Selection
         {
             string[] result = GetFiles(
                 _settingsViewModel.GetPath(
-                    _viewModel.SelectedHost.BuiltInCategory, _viewModel.SelectedShape.Shape == OpeningShape.Round));
+                    _viewModel.SelectedHost.BuiltInCategory, _viewModel.SelectedShape.Shape == SealingShapeType.Round));
 
             while (result == null || result.Length == 0)
             {

@@ -24,7 +24,7 @@ namespace FireBoost.Features.Selection.Models
         private InstanceParameters _instanceParameters;
 
         /// <summary></summary>
-        public (Parameter, double)[] SetOtherParams(ref FamilyInstance newInstance, MEPCurve element, OpeningShape shape)
+        public (Parameter, double)[] SetOtherParams(ref FamilyInstance newInstance, MEPCurve element, SealingShapeType shape)
         {
             (Parameter, double)[] result = null;
             _instanceParameters = new InstanceParameters(element);
@@ -64,7 +64,7 @@ namespace FireBoost.Features.Selection.Models
             {
                 if (element is CableTray || element is Conduit)
                 {
-                    result = shape == OpeningShape.Round ?
+                    result = shape == SealingShapeType.Round ?
                         DiameterParams(newInstance, element, _parameters.MepDiameter, IsRound(element)) :
                         IsRound(element) ?
                             DiameterToRechtangularParams(newInstance, element, _parameters.MepHeight, _parameters.MepWidth) :

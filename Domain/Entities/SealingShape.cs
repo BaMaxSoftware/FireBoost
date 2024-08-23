@@ -8,16 +8,13 @@ namespace FireBoost.Domain.Entities
         /// <summary></summary>
         public string Name { get; }
         /// <summary></summary>
-        public OpeningShape Shape { get; }
+        public SealingShapeType Shape { get; }
 
         /// <summary></summary>
-        public SealingShape(string name, OpeningShape shape)
+        public SealingShape(string name, SealingShapeType shape)
         { 
             Name = name;
             Shape = shape;
         }
-
-        /// <summary></summary>
-        public override string ToString() => Name;
     }
 }

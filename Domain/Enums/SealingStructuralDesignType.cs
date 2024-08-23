@@ -1,7 +1,7 @@
 ﻿namespace FireBoost.Domain.Enums
 {
     /// <summary></summary>
-    public enum SealingStructuralDesigns
+    public enum SealingStructuralDesignType
     {
         /// <summary></summary>
         Unknown,

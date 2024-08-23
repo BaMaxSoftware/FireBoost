@@ -132,7 +132,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeOpeningsDimensions(OpeningShape shape, ref FamilyInstance instance, double height, double width, double diameter)
+        public void ChangeOpeningsDimensions(SealingShapeType shape, ref FamilyInstance instance, double height, double width, double diameter)
         {
             using (Transaction t = new Transaction(Doc))
             {
@@ -141,11 +141,11 @@ namespace FireBoost.Features.Selection.Models
                     t.Start("Изменение размеров");
                     switch (shape)
                     {
-                        case OpeningShape.Reachtangle:
+                        case SealingShapeType.Reachtangle:
                             instance.get_Parameter(_parameters.OpeningHeight).Set(height);
                             instance.get_Parameter(_parameters.OpeningWidth).Set(width);
                             break;
-                        case OpeningShape.Round:
+                        case SealingShapeType.Round:
                             instance.get_Parameter(_parameters.OpeningDiameter).Set(diameter);
                             break;
                     }
@@ -196,7 +196,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeOtherParams(ref FamilyInstance newInstance, string duration, string minutes, SealingMaterials material)
+        public void ChangeOtherParams(ref FamilyInstance newInstance, string duration, string minutes, SealingMaterialType material)
         {
             using (Transaction t = new Transaction(Doc))
             {
@@ -208,7 +208,7 @@ namespace FireBoost.Features.Selection.Models
                     durationParameter.SetValueString(duration);
                     fireParamParameter.SetValueString(minutes);
                 }
-                if (material == SealingMaterials.PM)
+                if (material == SealingMaterialType.PM)
                 {
                     Parameter materialParameter = newInstance.LookupParameter("Минплита");
                     if (materialParameter != null && !materialParameter.IsReadOnly)
