@@ -19,7 +19,7 @@ namespace FireBoost.ExternalCommands
             {
                 return Result.Failed;
             }
-            new SelectionApp(commandData.Application.ActiveUIDocument).ShowWindow();
+            new SelectionApp().ShowWindow();
             return Result.Succeeded;
         }
     }

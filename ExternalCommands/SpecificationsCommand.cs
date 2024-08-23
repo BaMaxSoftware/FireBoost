@@ -10,8 +10,6 @@ namespace FireBoost.ExternalCommands
     [Regeneration(RegenerationOption.Manual)]
     public class SpecificationsCommand : IExternalCommand
     {
-        
-
         /// <summary>
         /// Overload this method to implement and external command within Revit.
         /// </summary>

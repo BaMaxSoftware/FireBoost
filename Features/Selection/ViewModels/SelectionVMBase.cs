@@ -7,6 +7,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using FireBoost.Domain.Data;
 using FireBoost.Domain.Entities;
@@ -285,12 +286,12 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 DocElementReferences = _pickObjects.Select(
                     ObjectType.Element,
-                    new SelectionFilter(_selectedMepType.AllowCategories, false, _selectionApp.ActiveDoc),
+                    new SelectionFilter(_selectedMepType.AllowCategories, false, _getActiveUIEvent.ActiveDocument),
                     _docElementReferences,
-                    _selectionApp.ActiveUIDoc,
+                    _getActiveUIEvent.ActiveUIDocument,
                     false);
             }
-            _selectionApp.GetMainWindow().ShowDialog();
+            _selectionApp.GetMainWindow().Show();
         }));
 
         /// <summary></summary>
@@ -301,11 +302,12 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 DocHostReferences = _pickObjects.Select(
                     ObjectType.Element,
-                    new SelectionFilter(_selectedHost.BuiltInCategory, false, _selectionApp.ActiveDoc),
-                    _docHostReferences, _selectionApp.ActiveUIDoc,
+                    new SelectionFilter(_selectedHost.BuiltInCategory, false, _getActiveUIEvent.ActiveDocument),
+                    _docHostReferences,
+                    _getActiveUIEvent.ActiveUIDocument,
                     true);
             }
-            _selectionApp.GetMainWindow().ShowDialog();
+            _selectionApp.GetMainWindow().Show();
         }));
 
         /// <summary></summary>
@@ -316,12 +318,12 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 LinkElementReferences = _pickObjects.Select(
                     ObjectType.LinkedElement,
-                    new SelectionFilter(_selectedMepType.AllowCategories, true, _selectionApp.ActiveDoc),
+                    new SelectionFilter(_selectedMepType.AllowCategories, true, _getActiveUIEvent.ActiveDocument),
                     _linkElementReferences,
-                    _selectionApp.ActiveUIDoc,
+                    _getActiveUIEvent.ActiveUIDocument,
                     false);
             }
-            _selectionApp.GetMainWindow().ShowDialog();
+            _selectionApp.GetMainWindow().Show();
         }));
 
         /// <summary></summary>
@@ -332,12 +334,12 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 LinkHostReferences = _pickObjects.Select(
                     ObjectType.LinkedElement,
-                    new SelectionFilter(_selectedHost.BuiltInCategory, true, _selectionApp.ActiveDoc),
+                    new SelectionFilter(_selectedHost.BuiltInCategory, true, _getActiveUIEvent.ActiveDocument),
                     _linkHostReferences,
-                    _selectionApp.ActiveUIDoc,
+                    _getActiveUIEvent.ActiveUIDocument,
                     true);
             }
-            _selectionApp.GetMainWindow().ShowDialog();
+            _selectionApp.GetMainWindow().Show();
         }));
         #endregion Properties
 
@@ -417,6 +419,8 @@ namespace FireBoost.Features.Selection.ViewModels
             _height =
             _width =
             _offset = "0";
+            _getActiveUIEvent = new GetUIDocumentEvent();
+            _getActiveUIDocument = ExternalEvent.Create(_getActiveUIEvent);
 
             //SetFamilyAndSymbolDefault();
         }
@@ -523,5 +527,10 @@ namespace FireBoost.Features.Selection.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        public void GetActiveUIDocument() => _getActiveUIDocument.Raise();
+
+        private readonly ExternalEvent _getActiveUIDocument;
+        private readonly GetUIDocumentEvent _getActiveUIEvent;
     }
 }

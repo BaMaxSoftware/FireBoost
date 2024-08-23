@@ -12,7 +12,8 @@
         ResizeMode="NoResize"
         Title="Подбор"
         d:DataContext="{d:DesignInstance Type=vm:SelectionVM, IsDesignTimeCreatable=False}"
-        SizeToContent="Height">
+        SizeToContent="Height" 
+        Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

@@ -7,14 +7,6 @@ namespace FireBoost.Features.Selection.ViewModels
     public partial class SelectionVM
     {
         /// <summary></summary>
-        public DBSeal GetSealData() => new DBSeal(_selectedHost.DBId,
-            (int)_selectedShape.Shape,
-            _selectedMepType.Type,
-            (int)_selectedMaterial.SealingMaterialType,
-            (int)_selectedStructuralDesign.StructuralDesign,
-            _selectedFireResistances.Minutes);
-
-        /// <summary></summary>
         public bool IsValidData(bool showMsg = true)
         {
             if (_selectedHost == null ||
@@ -51,5 +43,8 @@ namespace FireBoost.Features.Selection.ViewModels
 
         /// <summary></summary>
         public void SettingsShowDialog() => _selectionApp.SettingsShowDialog();
+
+        /// <summary></summary>
+        public void Start() => _selectionApp.Start();
     }
 }

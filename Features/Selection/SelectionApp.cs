@@ -48,21 +48,14 @@ namespace FireBoost.Features.Selection
             ActiveUIDoc = uIDoc;
             ActiveDoc = ActiveUIDoc.Document;
             _viewModel = new SelectionVM(this);
+            _mainWindow = new MainWindow(_viewModel);
 
             _json = new JsonHandler();
             _json.Deserialize(ref _settingsViewModel);
         }
 
         /// <summary></summary>
-        public void ShowWindow()
-        {
-            _mainWindow = new MainWindow(_viewModel);
-            _mainWindow.ShowDialog();
-            if (_mainWindow.DialogResult == true)
-            {
-                Start();
-            }
-        }
+        public void ShowWindow() => _mainWindow.Show();
 
         /// <summary></summary>
         public void SettingsShowDialog()
@@ -83,7 +76,7 @@ namespace FireBoost.Features.Selection
         /// <summary></summary>
         public void Start()
         {
-            
+            _mainWindow.Hide();
 
             if (_viewModel.IsValidData())
             {
@@ -174,7 +167,8 @@ namespace FireBoost.Features.Selection
                     }
                 }
             }
-            ShowWindow();
+
+            _mainWindow.Show();
         }
 
         private string[] GetFiles()

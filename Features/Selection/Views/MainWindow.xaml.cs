@@ -18,18 +18,13 @@ namespace FireBoost.Features.Selection.Views
             InitializeComponent();
         }
 
-        private void ButtonOK_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = true;
-            Close();
-        }
+        private void ButtonOK_Click(object sender, RoutedEventArgs e) => _vm.Start();
 
-        private void ButtonCancel_Click(object sender, RoutedEventArgs e)
-        {
-            DialogResult = false;
-            Close();
-        }
+        private void ButtonCancel_Click(object sender, RoutedEventArgs e) => Close();
 
         private void ButtonSettings_Click(object sender, RoutedEventArgs e) => _vm.SettingsShowDialog();
+
+        private void Window_Loaded(object sender, RoutedEventArgs e) => _vm.GetActiveUIDocument();
+       
     }
 }
