@@ -211,9 +211,6 @@
     <Folder Include="Features\ParametersCopy\Models\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\32x32_testButton.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\32x32_Manager.png" />
     <Resource Include="Resources\32x32_Parameters.png" />
     <Resource Include="Resources\32x32_PenetrationSeal3.png" />
@@ -221,7 +218,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\32x32_PenetrationSeal4.png" />
-    <Content Include="Resources\copy32.ico" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="Licencse\License.csproj">
