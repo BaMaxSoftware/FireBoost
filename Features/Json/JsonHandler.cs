@@ -1,5 +1,4 @@
-﻿using FireBoost.Features.Selection.ViewModels;
-using FireBoost.Features.Settings;
+﻿using FireBoost.Features.Settings;
 using Newtonsoft.Json;
 using System;
 using System.IO;
@@ -13,7 +12,7 @@ namespace FireBoost.Features.Json
     {
         private readonly string _assmblyLocation;
         private readonly string _directoryPath;
-        private readonly string _settings = "Directories.json";
+        private readonly string _settings = "FireBoostSettings.json";
 
         /// <summary></summary>
         public JsonHandler()
