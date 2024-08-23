@@ -364,3 +364,9 @@ FodyWeavers.xsd
 /Core/Core.csproj
 /Database/Database.csproj
 /Licencse/License.csproj
+/Confused
+/Core
+/Database
+/InstallActions
+/Licencse
+/Obfuscation
