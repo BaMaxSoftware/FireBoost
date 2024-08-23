@@ -653,10 +653,6 @@
         </Setter>
     </Style>
     <!--#endregion ListView-->
-
-    <!-- #region ImageBrushes-->
-    <ImageBrush x:Key="AddImg" ImageSource="/FireBoost;component/Resources/32x32_testButton.png"/>
-    <!-- #endregion-->
     
     <!--#region Expander-->
     <Style x:Key="ExpanderStyle1" TargetType="{x:Type Expander}">

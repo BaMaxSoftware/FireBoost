@@ -13,6 +13,7 @@
         Title="Подбор"
         d:DataContext="{d:DesignInstance Type=vm:SelectionVM, IsDesignTimeCreatable=False}"
         SizeToContent="Height" 
+        OverridesDefaultStyle="True" 
         Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary>

@@ -21,5 +21,8 @@ namespace FireBoost.Domain.Entities
             Description = description;
             SealingMaterialType = sealingMaterial;
         }
+
+        /// <summary></summary>
+        public override string ToString() => Description;
     }
 }

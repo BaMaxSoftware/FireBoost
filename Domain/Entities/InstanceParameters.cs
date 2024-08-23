@@ -20,7 +20,9 @@ namespace FireBoost.Domain.Entities
             switch (element.Category.Id.IntegerValue)
             {
                 case -2008044:  // трубы
-                    Diameter = BuiltInParameter.RBS_PIPE_DIAMETER_PARAM;
+                    Height = 
+                    Width = BuiltInParameter.INVALID;
+                    Diameter = BuiltInParameter.RBS_PIPE_OUTER_DIAMETER;
                     break;
                 case -2008000:  // воздуховоды
                     if (element is Duct duct)
@@ -30,9 +32,12 @@ namespace FireBoost.Domain.Entities
                             case ConnectorProfileType.Rectangular:
                                 Height = BuiltInParameter.RBS_CURVE_HEIGHT_PARAM;
                                 Width = BuiltInParameter.RBS_CURVE_WIDTH_PARAM;
+                                Diameter = BuiltInParameter.INVALID;
                                 break;
 
                             case ConnectorProfileType.Round:
+                                Height = 
+                                Width = BuiltInParameter.INVALID;
                                 Diameter = BuiltInParameter.RBS_CURVE_DIAMETER_PARAM;
                                 break;
                             default:
@@ -44,8 +49,11 @@ namespace FireBoost.Domain.Entities
                 case -2008130:  // лотки
                     Height = BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM;
                     Width = BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM;
+                    Diameter = BuiltInParameter.INVALID;
                     break;
                 case -2008132:  // короба
+                    Height = 
+                    Width = BuiltInParameter.INVALID;
                     Diameter = BuiltInParameter.RBS_CONDUIT_OUTER_DIAM_PARAM;
                     break;
                 default:

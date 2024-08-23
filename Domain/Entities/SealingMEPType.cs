@@ -33,5 +33,8 @@ namespace FireBoost.Domain.Entities
             SubType = subType;
             AllowCategories = allowCategories;
         }
+
+        /// <summary></summary>
+        public override string ToString() => MainTypeString;
     }
 }

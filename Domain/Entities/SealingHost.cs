@@ -19,5 +19,8 @@ namespace FireBoost.Domain.Entities
             BuiltInCategory = builtInCategory;
             DBId = dBId;
         }
+
+        /// <summary></summary>
+        public override string ToString() => Name;
     }
 }

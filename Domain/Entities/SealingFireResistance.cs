@@ -23,5 +23,8 @@
             Depth = depth;
             _description = description;
         }
+
+        /// <summary></summary>
+        public override string ToString() => Description;
     }
 }

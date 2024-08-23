@@ -106,7 +106,7 @@ namespace FireBoost.Features.Selection.Models
                         switch (SelectionViewModel.SelectedShape.Shape)
                         {
                             case SealingShapeType.Reachtangle:
-
+                                
                                 if (parameters.Diameter == BuiltInParameter.INVALID)
                                 {
                                     Dimensions = (
@@ -116,7 +116,7 @@ namespace FireBoost.Features.Selection.Models
                                 }
                                 else
                                 {
-                                    double size = CurrentElement.Instance.get_Parameter(parameters.Diameter).AsDouble() + Offset;
+                                    double size = CurrentElement.Instance.get_Parameter(parameters.Diameter).AsDouble();
                                     Dimensions = (
                                         size + Offset + slopeOffset,
                                         size + Offset,
@@ -160,11 +160,11 @@ namespace FireBoost.Features.Selection.Models
 
             if (CurrentHost.Element is Wall wall)
             {
-                Transactions.Move(ref newInstance, (CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
+                //Transactions.Move(ref newInstance, (CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
             }
             else if (CurrentHost.Element is Floor floor)
             {
-                Transactions.Move(ref newInstance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
+                //Transactions.Move(ref newInstance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
             }
             
             Transactions.ChangeOtherParams(ref newInstance,

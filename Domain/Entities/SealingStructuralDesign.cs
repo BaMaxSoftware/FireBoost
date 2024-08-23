@@ -19,5 +19,8 @@ namespace FireBoost.Domain.Entities
             Descripcions = descripcions;
             StructuralDesign = structuralDesign;
         }
+
+        /// <summary></summary>
+        public override string ToString() => Descripcions;
     }
 }

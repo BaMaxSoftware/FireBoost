@@ -19,6 +19,7 @@ namespace FireBoost.Features.Selection.ViewModels
     {
 
         #region Fields
+        private readonly ExternalEvent _getActiveUIDocument;
         private readonly string _familyNameDefault = "<Не найдено>";
         private readonly string _familyTypeDefault = "<Не найден>";
         private readonly SealingFireResistance[] _fireResistancesArray;
@@ -31,6 +32,8 @@ namespace FireBoost.Features.Selection.ViewModels
         private readonly DBContext _dBContext = new DBContext();
         private readonly PickObjects _pickObjects = new PickObjects();
         private readonly SealingData _sealingData = new SealingData();
+
+        internal readonly GetUIDocumentEvent GetActiveUIEvent;
 
         private bool _isJoin, _isDimensionsManually, _buttonOKIsEnabled;
         private int _docMepCount, _docHostCount, _linkMepCount, _linkHostCount;
@@ -286,9 +289,9 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 DocElementReferences = _pickObjects.Select(
                     ObjectType.Element,
-                    new SelectionFilter(_selectedMepType.AllowCategories, false, _getActiveUIEvent.ActiveDocument),
+                    new SelectionFilter(_selectedMepType.AllowCategories, false, GetActiveUIEvent.ActiveDocument),
                     _docElementReferences,
-                    _getActiveUIEvent.ActiveUIDocument,
+                    GetActiveUIEvent.ActiveUIDocument,
                     false);
             }
             _selectionApp.GetMainWindow().Show();
@@ -302,9 +305,9 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 DocHostReferences = _pickObjects.Select(
                     ObjectType.Element,
-                    new SelectionFilter(_selectedHost.BuiltInCategory, false, _getActiveUIEvent.ActiveDocument),
+                    new SelectionFilter(_selectedHost.BuiltInCategory, false, GetActiveUIEvent.ActiveDocument),
                     _docHostReferences,
-                    _getActiveUIEvent.ActiveUIDocument,
+                    GetActiveUIEvent.ActiveUIDocument,
                     true);
             }
             _selectionApp.GetMainWindow().Show();
@@ -318,9 +321,9 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 LinkElementReferences = _pickObjects.Select(
                     ObjectType.LinkedElement,
-                    new SelectionFilter(_selectedMepType.AllowCategories, true, _getActiveUIEvent.ActiveDocument),
+                    new SelectionFilter(_selectedMepType.AllowCategories, true, GetActiveUIEvent.ActiveDocument),
                     _linkElementReferences,
-                    _getActiveUIEvent.ActiveUIDocument,
+                    GetActiveUIEvent.ActiveUIDocument,
                     false);
             }
             _selectionApp.GetMainWindow().Show();
@@ -334,9 +337,9 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 LinkHostReferences = _pickObjects.Select(
                     ObjectType.LinkedElement,
-                    new SelectionFilter(_selectedHost.BuiltInCategory, true, _getActiveUIEvent.ActiveDocument),
+                    new SelectionFilter(_selectedHost.BuiltInCategory, true, GetActiveUIEvent.ActiveDocument),
                     _linkHostReferences,
-                    _getActiveUIEvent.ActiveUIDocument,
+                    GetActiveUIEvent.ActiveUIDocument,
                     true);
             }
             _selectionApp.GetMainWindow().Show();
@@ -419,10 +422,8 @@ namespace FireBoost.Features.Selection.ViewModels
             _height =
             _width =
             _offset = "0";
-            _getActiveUIEvent = new GetUIDocumentEvent();
-            _getActiveUIDocument = ExternalEvent.Create(_getActiveUIEvent);
-
-            //SetFamilyAndSymbolDefault();
+            GetActiveUIEvent = new GetUIDocumentEvent();
+            _getActiveUIDocument = ExternalEvent.Create(GetActiveUIEvent);
         }
 
         
@@ -528,9 +529,9 @@ namespace FireBoost.Features.Selection.ViewModels
             }
         }
 
+        /// <summary></summary>
         public void GetActiveUIDocument() => _getActiveUIDocument.Raise();
 
-        private readonly ExternalEvent _getActiveUIDocument;
-        private readonly GetUIDocumentEvent _getActiveUIEvent;
+        
     }
 }

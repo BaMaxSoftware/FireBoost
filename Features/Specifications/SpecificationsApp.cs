@@ -39,7 +39,7 @@ namespace FireBoost.Features.Specifications
             do
             {
                 _json.Deserialize(ref _settingsViewModel);
-                if (string.IsNullOrEmpty(_settingsViewModel.SchedulesPath))
+                if (string.IsNullOrEmpty(_settingsViewModel.SchedulesPath) || !fileExists)
                 {
                     if (!ShowSettings())
                     {

@@ -89,7 +89,7 @@ namespace FireBoost.Features.Selection.Models
             return (width, height);
         }
 
-        public void Join(FamilyInstance[] familyInstances, FamilySymbol symbol)
+        public void Join(FamilyInstance[] familyInstances, FamilySymbol symbol, (Element Element, Transform Transform, XYZ GlobalPoint) _currentHost)
         {
 
             if (familyInstances == null || familyInstances.Length == 0) return;
@@ -151,6 +151,16 @@ namespace FireBoost.Features.Selection.Models
 
             _transactions.ChangeInstanceElevation(ref newInstance, elevation);
             _transactions.ChangeJoinOpeningSize(Doc, ref newInstance, height, width);
+
+            if (_currentHost.Element is Wall wall)
+            {
+                //_transactions.Move(ref newInstance, (_currentHost.Transform == null ? wall.Orientation : _currentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
+            }
+            else if (_currentHost.Element is Floor floor)
+            {
+                //_transactions.Move(ref newInstance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
+            }
+
             if (_settings.Parameters != default && _settings.Parameters.Length > 0)
             {
                 _transactions.ChangeProjectParams(newInstance, _settings.Parameters);

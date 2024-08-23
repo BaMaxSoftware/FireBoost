@@ -136,9 +136,11 @@
     <Compile Include="Features\ParametersCopy\Views\ParametersWindow.xaml.cs">
       <DependentUpon>ParametersWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Features\Selection\Models\CreateEvent.cs" />
     <Compile Include="Features\Selection\Models\CreatorBase.cs" />
     <Compile Include="Features\Selection\Models\CreatorWithMEP.cs" />
     <Compile Include="Features\Selection\Models\CreatorWithoutMEP.cs" />
+    <Compile Include="Features\Selection\Models\GetUIDocumentEvent.cs" />
     <Compile Include="Features\Selection\Models\SelectionFilter.cs" />
     <Compile Include="Features\Selection\Models\JoinWallOpenings.cs" />
     <Compile Include="Features\Selection\Models\SizeChanger.cs" />

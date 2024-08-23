@@ -16,5 +16,8 @@ namespace FireBoost.Domain.Entities
             Name = name;
             Shape = shape;
         }
+
+        /// <summary></summary>
+        public override string ToString() => Name;
     }
 }

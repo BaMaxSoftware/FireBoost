@@ -135,7 +135,7 @@ namespace FireBoost.Features.Selection.Models
                 if (SelectionViewModel.IsJoin && CurrentHost.Element != default && CurrentHost.Element is Wall)
                 {
                     jo = new JoinWallOpenings(SettingsViewModel, ActiveDoc, CurrentHost.Element as Wall, RoundTo);
-                    jo.Join(FamilyInstanceList.ToArray(), FamilySymbol);
+                    jo.Join(FamilyInstanceList.ToArray(), FamilySymbol, CurrentHost);
                 }
                 Transactions.Regenerate();
             }
