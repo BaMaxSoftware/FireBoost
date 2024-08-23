@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using Autodesk.Revit.UI;
 using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
 

@@ -252,7 +252,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
-                        <RowDefinition Height="1*"/>
+                        <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="265"/>
@@ -301,12 +301,34 @@
                                Grid.Column="3"
                                Text="мм"
                                Style="{DynamicResource TextBlockStyle1}"/>
-                    <CheckBox Grid.Row="2"
-                              Grid.ColumnSpan="2"
-                              Style="{DynamicResource CheckBoxStyle1}"
-                              Content="Объединить проходки" 
-                              IsChecked="{Binding IsJoin}">
-                    </CheckBox>
+
+                    <Grid Grid.Row="2" Grid.ColumnSpan="2">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*"/>
+                            <RowDefinition Height="1*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="125"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Grid.Row="0"
+                                   Grid.Column="0"
+                                   Text="Учитывать изоляцию" />
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="0" 
+                                   Text="Объединить проходки" />
+
+                        <CheckBox Grid.Row="0"
+                                  Grid.Column="1"
+                                  Style="{DynamicResource CheckBoxStyle1}"
+                                  Content="" 
+                                  IsChecked="{Binding HasInsulation}"/>
+                        <CheckBox Grid.Row="1"
+                                  Grid.Column="1"
+                                  Style="{DynamicResource CheckBoxStyle1}"
+                                  Content="" 
+                                  IsChecked="{Binding IsJoin}"/>
+                    </Grid>
                 </Grid>
             </StackPanel>
         </GroupBox>

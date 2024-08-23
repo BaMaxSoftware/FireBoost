@@ -36,8 +36,8 @@ namespace FireBoost.Features.Selection.ViewModels
         private readonly SealingData _sealingData = new SealingData();
 
         internal readonly GetUIDocumentEvent GetActiveUIEvent;
-
-        private bool _isJoin, _isDimensionsManually, _buttonOKIsEnabled;
+        
+        private bool _hasInsulation, _isJoin, _isDimensionsManually, _buttonOKIsEnabled;
         private int _docMepCount, _docHostCount, _linkMepCount, _linkHostCount;
         private string _dimensionsRoundTo, _elevationRoundTo, _diameter, _height, _width, _offset, _familyFromDb, _typeFromDb;
         private ListCollectionView _communicationsTypes;
@@ -52,6 +52,14 @@ namespace FireBoost.Features.Selection.ViewModels
         #endregion Fields
 
         #region Properties
+
+        
+        /// <summary></summary>
+        public bool HasInsulation
+        {
+            get => _hasInsulation;
+            set => ChangeProperty(ref _hasInsulation, value);
+        }
         /// <summary></summary>
         public bool IsJoin 
         {
@@ -298,6 +306,7 @@ namespace FireBoost.Features.Selection.ViewModels
                     false);
             }
             view = WPFVisibility.Visible;
+            _selectionApp.GetMainWindow().Focus();
         }));
 
         /// <summary></summary>
@@ -315,6 +324,7 @@ namespace FireBoost.Features.Selection.ViewModels
                     true);
             }
             view = WPFVisibility.Visible;
+            _selectionApp.GetMainWindow().Focus();
         }));
 
         /// <summary></summary>
@@ -332,6 +342,7 @@ namespace FireBoost.Features.Selection.ViewModels
                     false);
             }
             view = WPFVisibility.Visible;
+            _selectionApp.GetMainWindow().Focus();
         }));
 
         /// <summary></summary>
@@ -349,6 +360,7 @@ namespace FireBoost.Features.Selection.ViewModels
                     true);
             }
             view = WPFVisibility.Visible;
+            _selectionApp.GetMainWindow().Focus();
         }));
         #endregion Properties
 
@@ -414,7 +426,7 @@ namespace FireBoost.Features.Selection.ViewModels
             SelectedShape = _shapesArray?[0];
             SelectedStructuralDesign = _structuralDesignsArray?[0];
 
-            
+            HasInsulation =
             IsDimensionsManually = true;
 
             _docMepCount =

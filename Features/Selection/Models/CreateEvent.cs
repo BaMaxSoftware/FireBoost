@@ -147,6 +147,7 @@ namespace FireBoost.Features.Selection.Models
             }
             
             _mainWindow.Visibility = System.Windows.Visibility.Visible;
+            _mainWindow.Focus();
         }
 
         private string[] GetFiles()
