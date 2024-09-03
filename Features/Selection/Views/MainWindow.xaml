@@ -8,12 +8,14 @@
         mc:Ignorable="d" 
         Height="750"
         Width="550"
+        MinWidth="550"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         Title="Подбор"
         d:DataContext="{d:DesignInstance Type=vm:SelectionVM, IsDesignTimeCreatable=False}"
         SizeToContent="Height" 
-        Loaded="Window_Loaded">
+        Visibility="{Binding Visibility, Mode=TwoWay}" 
+        Loaded="Window_Loaded" IsVisibleChanged="Window_IsVisibleChanged">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -252,7 +254,7 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="1*"/>
                         <RowDefinition Height="1*"/>
-                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="1*"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="265"/>
@@ -301,34 +303,12 @@
                                Grid.Column="3"
                                Text="мм"
                                Style="{DynamicResource TextBlockStyle1}"/>
-
-                    <Grid Grid.Row="2" Grid.ColumnSpan="2">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="1*"/>
-                            <RowDefinition Height="1*"/>
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="125"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Row="0"
-                                   Grid.Column="0"
-                                   Text="Учитывать изоляцию" />
-                        <TextBlock Grid.Row="1"
-                                   Grid.Column="0" 
-                                   Text="Объединить проходки" />
-
-                        <CheckBox Grid.Row="0"
-                                  Grid.Column="1"
-                                  Style="{DynamicResource CheckBoxStyle1}"
-                                  Content="" 
-                                  IsChecked="{Binding HasInsulation}"/>
-                        <CheckBox Grid.Row="1"
-                                  Grid.Column="1"
-                                  Style="{DynamicResource CheckBoxStyle1}"
-                                  Content="" 
-                                  IsChecked="{Binding IsJoin}"/>
-                    </Grid>
+                    <CheckBox Grid.Row="2"
+                              Grid.ColumnSpan="2"
+                              Style="{DynamicResource CheckBoxStyle1}"
+                              Content="Объединить проходки" 
+                              IsChecked="{Binding IsJoin}">
+                    </CheckBox>
                 </Grid>
             </StackPanel>
         </GroupBox>
@@ -337,12 +317,17 @@
                   Style="{DynamicResource GroupBoxStyle1}"
                   Grid.Row="2">
             <StackPanel>
+                <CheckBox Content="Ручная расстановка"
+                          Style="{DynamicResource CheckBoxStyle1}"
+                          IsChecked="{Binding IsIgnoringMep}"/>
                 <GroupBox Header="В активном проекте"
                           Style="{DynamicResource GroupBoxStyle1}"
+                          Margin="0"
                           Grid.Row="2">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Button Style="{DynamicResource ButtonOkStyle}" 
+                                    IsEnabled="{Binding IsMepSelectionEnabled}"
                                     Width="180"
                                     Margin="0,5"
                                     Content="Коммуникации"
@@ -365,10 +350,12 @@
                 </GroupBox>
                 <GroupBox Header="В связанном файле"
                           Style="{DynamicResource GroupBoxStyle1}"
+                          Margin="0"
                           Grid.Row="2">
                     <StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Button Style="{DynamicResource ButtonOkStyle}" 
+                                    IsEnabled="{Binding IsMepSelectionEnabled}"
                                     Width="180"
                                     Margin="0,5"
                                     Content="Коммуникации"

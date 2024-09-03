@@ -11,11 +11,11 @@ namespace FireBoost.Features.Selection.Models
     internal class Transactions
     {
         private Document Doc { get; }
-        private Parameters _parameters { get; set; }
+        private Parameters Parameters { get; set; }
 
         public Transactions(Document doc)
         {
-            _parameters = new Parameters();
+            Parameters = new Parameters();
             Doc = doc;
         }
 
@@ -120,8 +120,8 @@ namespace FireBoost.Features.Selection.Models
                 try
                 { 
                     t.Start("Изменение размеров");
-                    newInstance.get_Parameter(_parameters.OpeningHeight).Set(height);
-                    newInstance.get_Parameter(_parameters.OpeningWidth).Set(width);
+                    newInstance.get_Parameter(Parameters.OpeningHeight).Set(height);
+                    newInstance.get_Parameter(Parameters.OpeningWidth).Set(width);
                     t.Commit();
                 }
                 catch 
@@ -142,11 +142,11 @@ namespace FireBoost.Features.Selection.Models
                     switch (shape)
                     {
                         case SealingShapeType.Reachtangle:
-                            instance.get_Parameter(_parameters.OpeningHeight).Set(height);
-                            instance.get_Parameter(_parameters.OpeningWidth).Set(width);
+                            instance.get_Parameter(Parameters.OpeningHeight).Set(height);
+                            instance.get_Parameter(Parameters.OpeningWidth).Set(width);
                             break;
                         case SealingShapeType.Round:
-                            instance.get_Parameter(_parameters.OpeningDiameter).Set(diameter);
+                            instance.get_Parameter(Parameters.OpeningDiameter).Set(diameter);
                             break;
                     }
                     t.Commit();

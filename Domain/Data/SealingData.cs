@@ -11,7 +11,9 @@ namespace FireBoost.Domain.Data
         public SealingHost[] CreateHostsTypesArray() => new SealingHost[]
         {
             new SealingHost("Стена", BuiltInCategory.OST_Walls, 1),
-            new SealingHost("Перекрытия", BuiltInCategory.OST_Floors, 2),
+            new SealingHost("Перекрытие", BuiltInCategory.OST_Floors, 2),
+            new SealingHost("Стена - импорт из IFC", BuiltInCategory.OST_GenericModel, 1),
+            new SealingHost("Перекрытие - импорт из IFC", BuiltInCategory.OST_GenericModel, 2),
         };
 
         /// <summary></summary>

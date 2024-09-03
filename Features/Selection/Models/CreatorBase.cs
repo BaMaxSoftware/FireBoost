@@ -8,13 +8,18 @@ using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 
 namespace FireBoost.Features.Selection.Models
 {
     internal class CreatorBase
     {
+        public Options Options { get; } = new Options()
+        {
+            DetailLevel = ViewDetailLevel.Fine,
+            IncludeNonVisibleObjects = true,
+            ComputeReferences = true
+        };
         public SettingsVM SettingsViewModel { get; }
         public FamilySymbol FamilySymbol { get; }
         public SelectionVM SelectionViewModel { get; }
@@ -100,33 +105,40 @@ namespace FireBoost.Features.Selection.Models
                 if (CurrentElement != default)
                 {
                     var result = GetDimensions(CurrentElement.Instance);
-                    
-                    switch (SelectionViewModel.SelectedShape.Shape)
+
+                    if (result == (0, 0, 0))
+                        return;
+
+                    var parameters = new InstanceParameters(CurrentElement.Instance);
+                    if (parameters.IsValid)
                     {
-                        case SealingShapeType.Reachtangle:
+                        switch (SelectionViewModel.SelectedShape.Shape)
+                        {
+                            case SealingShapeType.Reachtangle:
                                 
-                            if (result.Height > 0 & result.Width > 0)
-                            { 
+                                if (parameters.Diameter == BuiltInParameter.INVALID)
+                                {
+                                    Dimensions = (
+                                        CurrentElement.Instance.get_Parameter(parameters.Height).AsDouble() + Offset + slopeOffset,
+                                        CurrentElement.Instance.get_Parameter(parameters.Width).AsDouble() + Offset,
+                                        0);
+                                }
+                                else
+                                {
+                                    double size = CurrentElement.Instance.get_Parameter(parameters.Diameter).AsDouble();
+                                    Dimensions = (
+                                        size + Offset + slopeOffset,
+                                        size + Offset,
+                                        0);
+                                }
+                                break;
+                            case SealingShapeType.Round:
                                 Dimensions = (
-                                    result.Height + Offset + slopeOffset,
-                                    result.Width + Offset,
-                                    0);
-                            }
-                            else if (result.Diameter > 0)
-                            { 
-                                Dimensions = (
-                                    result.Diameter + Offset + slopeOffset,
-                                    result.Diameter + Offset,
-                                    0);
-                            }
-                            break;
-                        case SealingShapeType.Round:
-                            Dimensions = (
-                                    0,
-                                    0,
-                                    (result.Diameter == 0 ? 
-                                    Math.Sqrt(Math.Pow(result.Height, 2) + Math.Pow(result.Width, 2)) : result.Diameter) + Offset + slopeOffset);
-                            break;
+                                        0,
+                                        0,
+                                        result.Diameter == 0 ? Math.Sqrt(Math.Pow(result.Height, 2) + Math.Pow(result.Width, 2)) : result.Diameter + Offset + slopeOffset);
+                                break;
+                        }
                     }
                 }
             }
@@ -149,13 +161,6 @@ namespace FireBoost.Features.Selection.Models
                 Dimensions.Height,
                 Dimensions.Width,
                 Dimensions.Diameter);
-
-            if (TryGetRotationParams(newInstance, out (Line Axis, double Angle) rotation))
-            { 
-                Transactions.RotateInstance(newInstance, rotation.Axis, rotation.Angle);
-            }
-
-            
             
             Transactions.ChangeOtherParams(newInstance,
                 SelectionViewModel.SelectedFireResistance.Depth.ToString(),
@@ -163,19 +168,7 @@ namespace FireBoost.Features.Selection.Models
                 SelectionViewModel.SelectedMaterial.SealingMaterialType);
         }
 
-        public void Move(FamilyInstance instance)
-        {
-            if (CurrentHost.Element is Wall wall)
-            {
-                Transactions.Move(instance, (CurrentHost.Transform == null ? wall.Orientation : CurrentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
-            }
-            else if (CurrentHost.Element is Floor floor)
-            {
-                Transactions.Move(instance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
-            }
-        }
-
-        private bool TryGetRotationParams(FamilyInstance instance, out (Line Axis, double Angle) rotation)
+        public void Rotate(FamilyInstance instance)
         {
             XYZ orient = null;
             switch (CurrentHost.Element)
@@ -204,35 +197,48 @@ namespace FireBoost.Features.Selection.Models
                         }
                     }
                     break;
+                case DirectShape directShape:
+                    var geo = directShape.get_Geometry(Options);
+                    foreach (var g in geo)
+                    {
+                        if (g is GeometryInstance gi)
+                        {
+                            orient = CurrentHost.Transform == null ? gi.Transform.BasisY : gi.Transform.Multiply(CurrentHost.Transform).BasisY;
+                            break;
+                        }
+                    }
+                    break;
             }
 
-            if (orient != null)
+            if (orient != null && instance.Location is LocationPoint location)
             {
                 var angle = Math.PI * 2 - orient.AngleOnPlaneTo(ActiveDoc.ActiveProjectLocation.GetTotalTransform().BasisY, XYZ.BasisZ);
-                var point = (instance.Location as LocationPoint).Point;
+                var point = location.Point;
                 var axis = Line.CreateBound(point, point.Add(XYZ.BasisZ));
-
-                rotation = (axis, angle);
-                return true;
-            }
-            else
-            {
-                rotation = default;
-                return false;
+                Transactions.RotateInstance(instance, axis, angle);
             }
         }
 
+        public void Move(FamilyInstance instance)
+        {
+            if (CurrentHost.Element is Wall wall)
+            {
+                Transactions.Move(instance, instance.FacingOrientation.Negate() * wall.Width * .5);
+            }
+            else if (CurrentHost.Element is Floor floor)
+            {
+                Transactions.Move(instance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
+            }
+        }
 
         public (double Height, double Width, double Diameter) GetDimensions(Element element)
         {
             (double Height, double Width, double Diameter) result = (0,0,0);
-            
-            var insulation = SelectionViewModel.HasInsulation ? element.get_Parameter(BuiltInParameter.RBS_REFERENCE_INSULATION_THICKNESS)?.AsDouble() * 2 ?? 0 : 0;
-           
+
             switch (element)
             {
                 case Pipe _:
-                    result = (0, 0, element.get_Parameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER)?.AsDouble() + insulation ?? 10);
+                    result = (0, 0, element.get_Parameter(BuiltInParameter.RBS_PIPE_OUTER_DIAMETER)?.AsDouble() ?? 10);
                     break;
 
                 case Duct duct:
@@ -240,25 +246,25 @@ namespace FireBoost.Features.Selection.Models
                     {
                         case ConnectorProfileType.Rectangular:
                             result = (
-                                element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM)?.AsDouble() + insulation ?? 10,
-                                element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM)?.AsDouble() + insulation ?? 10,
+                                element.get_Parameter(BuiltInParameter.RBS_CURVE_HEIGHT_PARAM)?.AsDouble() ?? 10,
+                                element.get_Parameter(BuiltInParameter.RBS_CURVE_WIDTH_PARAM)?.AsDouble() ?? 10,
                                 0);
                             break;
 
                         case ConnectorProfileType.Round:
-                            result = (0, 0, element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM)?.AsDouble() + insulation ?? 10);
+                            result = (0, 0, element.get_Parameter(BuiltInParameter.RBS_CURVE_DIAMETER_PARAM)?.AsDouble() ?? 10);
                             break;
                     }
                     break;
 
                 case Conduit _:
-                    result = (0, 0, element.get_Parameter(BuiltInParameter.RBS_CONDUIT_OUTER_DIAM_PARAM)?.AsDouble() + insulation ?? 10);
+                    result = (0, 0, element.get_Parameter(BuiltInParameter.RBS_CONDUIT_OUTER_DIAM_PARAM)?.AsDouble() ?? 10);
                     break;
 
                 case CableTray _:
                     result = (
-                        element.get_Parameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM)?.AsDouble() + insulation ?? 10,
-                        element.get_Parameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM)?.AsDouble() + insulation ?? 10,
+                        element.get_Parameter(BuiltInParameter.RBS_CABLETRAY_HEIGHT_PARAM)?.AsDouble() ?? 10,
+                        element.get_Parameter(BuiltInParameter.RBS_CABLETRAY_WIDTH_PARAM)?.AsDouble() ?? 10,
                         0);
                     break;
             }

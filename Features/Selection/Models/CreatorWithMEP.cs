@@ -2,7 +2,6 @@
 using Autodesk.Revit.DB.Electrical;
 using Autodesk.Revit.DB.Mechanical;
 using Autodesk.Revit.DB.Plumbing;
-using Autodesk.Revit.UI;
 using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
 using System;
@@ -13,17 +12,12 @@ namespace FireBoost.Features.Selection.Models
 {
     internal class CreatorWithMEP : CreatorBase
     {
-        private SizeChanger _sizeChanger = new SizeChanger();
-        private SolidCurveIntersectionOptions _intersectionOptions { get; } = new SolidCurveIntersectionOptions()
+        private readonly SizeChanger _sizeChanger = new SizeChanger();
+        private SolidCurveIntersectionOptions IntersectionOptions { get; } = new SolidCurveIntersectionOptions()
         {
             ResultType = SolidCurveIntersectionMode.CurveSegmentsInside
         };
-        private Options _options { get; } = new Options()
-        {
-            DetailLevel = ViewDetailLevel.Fine,
-            IncludeNonVisibleObjects = true,
-            ComputeReferences = true
-        };
+        
         
 
         public CreatorWithMEP(
@@ -60,7 +54,7 @@ namespace FireBoost.Features.Selection.Models
                     Curve elementCurve = GetCurve(element);
                     if (elementCurve == null) continue;
 
-                    SolidCurveIntersection intersections = hostSolid.IntersectWithCurve(elementCurve, _intersectionOptions);
+                    SolidCurveIntersection intersections = hostSolid.IntersectWithCurve(elementCurve, IntersectionOptions);
                     if (intersections.SegmentCount == 0) continue;
 
                     foreach (Curve intersection in intersections)
@@ -87,39 +81,65 @@ namespace FireBoost.Features.Selection.Models
                             {
                                 hostLine = intersectionLine;
                             }
-
-                            FamilyInstance newInstance;
-                            Level currentLevel;
-                            XYZ location;
-                            double elevation;
-                            switch (SelectionViewModel.SelectedHost.BuiltInCategory)
+                            
+                            Level currentLevel = null;
+                            double elevation = 0;
+                            switch (SelectionViewModel.SelectedHost.DBId)
                             {
-                                case BuiltInCategory.OST_Walls:
+                                case 1:
                                     currentLevel = GetLevel(CurrentElement.Instance, CurrentElement.Transform);
-                                    location = hostLine.GetEndPoint(0) + (hostLine.Length / 2 * hostLine.Direction);
-                                    elevation = (point0.Z + point1.Z) / 2 - currentLevel.Elevation;
+                                    elevation = (point0.Z + point1.Z) / 2 - currentLevel?.Elevation ?? 0;
                                     break;
-                                case BuiltInCategory.OST_Floors:
-                                    currentLevel = GetLevel(ActiveDoc.GetElement(CurrentHost.Element.LevelId) as Level);
-                                    location = point0.Z > point1.Z ? point0 : point1;
-                                    elevation = CurrentHost.Element.get_Parameter(BuiltInParameter.STRUCTURAL_ELEVATION_AT_TOP).AsDouble() - currentLevel.ProjectElevation;
+                                case 2:
+                                    if (CurrentHost.Element is DirectShape dShape)
+                                    {
+                                        Transform transform = null;
+                                        foreach(var g in dShape.get_Geometry(Options))
+                                        {
+                                            if (g is GeometryInstance gi)
+                                            { 
+                                                transform = CurrentHost.Transform == null ? CurrentHost.Transform : CurrentHost.Transform.Multiply(gi.Transform);
+                                                currentLevel = GetNearestLevel(transform.Origin.Z);
+                                                elevation = transform.Origin.Z - currentLevel?.Elevation ?? 0;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        var el = CurrentHost.Element.get_Parameter(BuiltInParameter.STRUCTURAL_ELEVATION_AT_TOP).AsDouble();
+                                        currentLevel = GetLevel(ActiveDoc.GetElement(CurrentHost.Element.LevelId) as Level);
+                                        elevation = CurrentHost.Element.get_Parameter(BuiltInParameter.STRUCTURAL_ELEVATION_AT_TOP).AsDouble() - currentLevel?.ProjectElevation ?? 0;
+                                        if (CurrentHost.Element is Floor floor)
+                                        {
+                                            var pp = floor.FloorType.get_Parameter(BuiltInParameter.FLOOR_ATTR_DEFAULT_THICKNESS_PARAM);
+                                            if (pp != null)
+                                            {
+                                                var thickness = pp.AsDouble();
+                                                elevation -= thickness * .5;
+                                            }
+                                        }
+                                    }
                                     break;
                                 default: continue;
                             }
-                            if (currentLevel == default || !currentLevel.IsValidObject || location == null) continue;
+                            if (currentLevel == default || !currentLevel.IsValidObject) continue;
 
-                            newInstance = Transactions.CreateNewInstance(
-                                        FamilySymbol,
-                                        hostLine.GetEndPoint(0) + (hostLine.Length / 2 * hostLine.Direction),
-                                        currentLevel);
+                            FamilyInstance newInstance = Transactions.CreateNewInstance(
+                                FamilySymbol,
+                                hostLine.Evaluate(0.5, true),
+                                currentLevel);
+
                             if (newInstance == default) continue;
 
-                            ChangeInstanceElevation(newInstance, elevation);
+                            if (!(CurrentHost.Element is DirectShape))
+                            { 
+                                ChangeInstanceElevation(newInstance, elevation);
+                            }
                             ChangeSize(newInstance, slopeOffset);
+                            Rotate(newInstance);
                             Transactions.ChangeSelectedParams(ActiveDoc, _sizeChanger.SetOtherParams(newInstance, CurrentElement.Instance as MEPCurve, SelectionViewModel.SelectedShape.Shape));
                             ChangeProjectParameters(newInstance);
-
-                            
 
                             if (newInstance != default && newInstance.IsValidObject)
                             {
@@ -144,21 +164,24 @@ namespace FireBoost.Features.Selection.Models
         private Level GetLevel(Element instance, Transform trans = null)
         {
             Level result;
-            Reference planarReference;
             switch (instance.GetType().Name)
             {
                 case nameof(Duct):
                 case nameof(Pipe):
                 case nameof(CableTray):
                 case nameof(Conduit):
-                    planarReference = (instance as MEPCurve).ReferenceLevel.GetPlaneReference();
+                    if ((instance as MEPCurve).ReferenceLevel is Level refLvl)
+                    {
+                        result = trans != null ? GetNearestLevel(refLvl.Elevation) : refLvl;
+                    }
+                    else
+                    {
+                        result = null;
+                    }
                     break;
-                default: return default;
-            }
-            result = ActiveDoc.GetElement(planarReference) as Level;
-            if (trans != null)
-            {
-                result = GetNearestLevel(result.Elevation);
+                default: 
+                    result = null;
+                    break;
             }
 
             return result;
@@ -181,7 +204,7 @@ namespace FireBoost.Features.Selection.Models
         {
             Solid solid = default;
 
-            GeometryElement geometry = data.Element.get_Geometry(_options);
+            GeometryElement geometry = data.Element.get_Geometry(Options);
             if (data.Transform != null)
             {
                 geometry = geometry.GetTransformed(data.Transform);

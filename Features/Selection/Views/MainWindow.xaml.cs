@@ -1,4 +1,6 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
+using System.Windows.Interop;
 using FireBoost.Features.Selection.ViewModels;
 
 namespace FireBoost.Features.Selection.Views
@@ -24,6 +26,23 @@ namespace FireBoost.Features.Selection.Views
 
         private void ButtonSettings_Click(object sender, RoutedEventArgs e) => _vm.SettingsShowDialog();
 
-        private void Window_Loaded(object sender, RoutedEventArgs e) => _vm.GetActiveUIDocument();
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            _vm.GetActiveUIDocument();
+        }
+
+        private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            switch (Visibility)
+            {
+                case Visibility.Visible:
+                    this.Focus(); 
+                    break;
+                case Visibility.Collapsed:
+                case Visibility.Hidden:
+                    _vm.GetActiveUIDocument();
+                    break;
+            }
+        }
     }
 }

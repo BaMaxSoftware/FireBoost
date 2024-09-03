@@ -80,7 +80,7 @@ namespace FireBoost.Features.Selection.Models
                                     {
                                         if (_dimensions.Diameter > 0)
                                         {
-                                            _dimensions.Diameter = _dimensions.Diameter * 0.0032808d;
+                                            _dimensions.Diameter *= 0.0032808d;
                                             Create();
                                         }
                                         else
@@ -103,8 +103,8 @@ namespace FireBoost.Features.Selection.Models
                                             {
                                                 if (_dimensions.Width > 0)
                                                 {
-                                                    _dimensions.Height = _dimensions.Height * 0.0032808d;
-                                                    _dimensions.Width = _dimensions.Width * 0.0032808d;
+                                                    _dimensions.Height *= 0.0032808d;
+                                                    _dimensions.Width *= 0.0032808d;
                                                     Create();
                                                 }
                                                 else
@@ -147,14 +147,13 @@ namespace FireBoost.Features.Selection.Models
             }
             
             _mainWindow.Visibility = System.Windows.Visibility.Visible;
-            _mainWindow.Focus();
         }
 
         private string[] GetFiles()
         {
             string[] result = GetFiles(
                 _settingsViewModel.GetPath(
-                    _viewModel.SelectedHost.BuiltInCategory, _viewModel.SelectedShape.Shape == SealingShapeType.Round));
+                    _viewModel.SelectedHost.DBId, _viewModel.SelectedShape.Shape == SealingShapeType.Round));
 
             while (result == null || result.Length == 0)
             {
@@ -216,11 +215,13 @@ namespace FireBoost.Features.Selection.Models
 
         private void Create()
         {
+            if (_activeDoc == null && !_activeDoc.IsValidObject)
+                return;
             _roundTo = (
                 int.TryParse(_viewModel.DimensionsRoundTo, out int dRoundTo) ? dRoundTo : 0,
                 int.TryParse(_viewModel.ElevationRoundTo, out int eRoundTo) ? eRoundTo : 0);
 
-            if (_viewModel.SelectedMepType.AllowCategories.Length == 0)
+            if (_viewModel.SelectedMepType.AllowCategories.Length == 0 || _viewModel.IsIgnoringMep)
             {
                 new CreatorWithoutMEP(_viewModel, _settingsViewModel, _activeDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
             }

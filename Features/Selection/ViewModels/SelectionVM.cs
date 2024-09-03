@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using FireBoost.Domain.Entities;
 
 namespace FireBoost.Features.Selection.ViewModels
 {
@@ -22,16 +21,27 @@ namespace FireBoost.Features.Selection.ViewModels
             }
 
             if (showMsg)
-            { 
-                if ((_docElementReferences.Count == 0 &&
-                    _linkElementReferences.Count == 0) &
-                    _selectedMepType.AllowCategories.Length > 0)
+            {
+                if (IsIgnoringMep)
                 {
-                    MessageBox.Show("Элементы коммуникаций не выбраны.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
-                    return false;
+                    if (!IsDimensionsManually)
+                    {
+                        MessageBox.Show("Перед размещением \"Без коммуникаций\", требуется указать размеры проходок.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return false;
+                    }
+                }
+                else
+                { 
+                    if ((_docElementReferences.Count == 0 &&
+                        _linkElementReferences.Count == 0) &
+                        _selectedMepType.AllowCategories.Length > 0)
+                    {
+                        MessageBox.Show("Элементы коммуникаций не выбраны.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
+                        return false;
+                    }
                 }
                 if (_docHostReferences.Count == 0 &&
-                    _linkHostReferences.Count == 0)
+                        _linkHostReferences.Count == 0)
                 {
                     MessageBox.Show("Элементы основы не выбраны.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
                     return false;

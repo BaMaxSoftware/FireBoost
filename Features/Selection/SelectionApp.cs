@@ -62,10 +62,6 @@ namespace FireBoost.Features.Selection
         public MainWindow GetMainWindow() => _mainWindow;
 
         /// <summary></summary>
-        public void Start()
-        {
-            if (_externalEvent != null)
-                _externalEvent.Raise();
-        } 
+        public void Start() => _externalEvent?.Raise();
     }
 }

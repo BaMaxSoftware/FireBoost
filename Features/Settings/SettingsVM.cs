@@ -70,14 +70,14 @@ namespace FireBoost.Features.Settings
         }
 
         /// <summary></summary>
-        public string GetPath(BuiltInCategory bic, bool isRound)
+        public string GetPath(int dbId, bool isRound)
         {
-            switch (bic)
+            switch (dbId)
             {
-                case BuiltInCategory.OST_Walls:
+                case 1:
                     return isRound ? _roundWallPath : _rectangularWallPath;
 
-                case BuiltInCategory.OST_Floors:
+                case 2:
                     return isRound ? _roundFloorPath : _rectangularFloorPath;
             }
 

@@ -1,4 +1,5 @@
 ﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.UI;
 using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
 
@@ -31,6 +32,7 @@ namespace FireBoost.Features.Selection.Models
                 instance = Transactions.CreateNewInstance(FamilySymbol, host.globalPoint, level);
                 ChangeInstanceElevation(instance, host.globalPoint.Z - level.Elevation);
                 ChangeSize(instance);
+                Rotate(instance);
                 ChangeProjectParameters(instance);
                 Move(instance);
             }

@@ -12,14 +12,12 @@ using Autodesk.Revit.UI.Selection;
 using FireBoost.Domain.Data;
 using FireBoost.Domain.Entities;
 using FireBoost.Features.Selection.Models;
-using FireBoost.Features.Selection.Views;
 using WPFVisibility = System.Windows.Visibility;
 
 namespace FireBoost.Features.Selection.ViewModels
 {
     public partial class SelectionVM : INotifyPropertyChanged, IDataErrorInfo
     {
-
         #region Fields
         private readonly ExternalEvent _getActiveUIDocument;
         private readonly string _familyNameDefault = "<Не найдено>";
@@ -36,8 +34,9 @@ namespace FireBoost.Features.Selection.ViewModels
         private readonly SealingData _sealingData = new SealingData();
 
         internal readonly GetUIDocumentEvent GetActiveUIEvent;
-        
-        private bool _hasInsulation, _isJoin, _isDimensionsManually, _buttonOKIsEnabled;
+
+        private WPFVisibility _visibility;
+        private bool _isJoin, _isDimensionsManually, _buttonOKIsEnabled, _isIgnoringMep, _isMepSelectionEnabled;
         private int _docMepCount, _docHostCount, _linkMepCount, _linkHostCount;
         private string _dimensionsRoundTo, _elevationRoundTo, _diameter, _height, _width, _offset, _familyFromDb, _typeFromDb;
         private ListCollectionView _communicationsTypes;
@@ -52,14 +51,27 @@ namespace FireBoost.Features.Selection.ViewModels
         #endregion Fields
 
         #region Properties
-
-        
         /// <summary></summary>
-        public bool HasInsulation
+        public WPFVisibility Visibility { get => _visibility; set => ChangeProperty(ref _visibility, value); }
+
+        /// <summary></summary>
+        public bool IsMepSelectionEnabled
         {
-            get => _hasInsulation;
-            set => ChangeProperty(ref _hasInsulation, value);
+            get => _isMepSelectionEnabled;
+            set => ChangeProperty(ref _isMepSelectionEnabled, value);
         }
+
+        /// <summary></summary>
+        public bool IsIgnoringMep
+        {
+            get => _isIgnoringMep;
+            set
+            { 
+                ChangeProperty(ref _isIgnoringMep, value);
+                IsMepSelectionEnabled = _isIgnoringMep == false;
+            }
+        }
+
         /// <summary></summary>
         public bool IsJoin 
         {
@@ -204,6 +216,8 @@ namespace FireBoost.Features.Selection.ViewModels
             {
                 if (TryChangeProperty(ref _selectedMepType, value))
                 { 
+                    IsIgnoringMep = _selectedMepType.AllowCategories.Length == 0;
+
                     if (_linkElementReferences.Count > 0)
                         LinkElementReferences = new List<Reference>();
                     if (_docElementReferences.Count > 0)
@@ -291,76 +305,70 @@ namespace FireBoost.Features.Selection.ViewModels
         /// <summary></summary>
         public SealingHost[] HostsArray => _hostsArray;
 
+
         /// <summary></summary>
         public ICommand DocElementSelection => _docElementSelection ?? (_docElementSelection = new VMCommand(obj =>
         {
-            var view = _selectionApp.GetMainWindow().Visibility;
-            view = WPFVisibility.Hidden;
             if (CheckMepTypes())
             {
+                Visibility = WPFVisibility.Hidden;
                 DocElementReferences = _pickObjects.Select(
                     ObjectType.Element,
                     new SelectionFilter(_selectedMepType.AllowCategories, false, GetActiveUIEvent.ActiveDocument),
                     _docElementReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     false);
+                Visibility = WPFVisibility.Visible;
             }
-            view = WPFVisibility.Visible;
-            _selectionApp.GetMainWindow().Focus();
         }));
 
         /// <summary></summary>
         public ICommand DocHostSelection => _docHostSelection ?? (_docHostSelection = new VMCommand(obj =>
         {
-            var view = _selectionApp.GetMainWindow().Visibility;
-            view = WPFVisibility.Hidden;
             if (CheckHosts())
             {
+                Visibility = WPFVisibility.Hidden;
                 DocHostReferences = _pickObjects.Select(
                     ObjectType.Element,
                     new SelectionFilter(_selectedHost.BuiltInCategory, false, GetActiveUIEvent.ActiveDocument),
                     _docHostReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     true);
+                Visibility = WPFVisibility.Visible;
             }
-            view = WPFVisibility.Visible;
-            _selectionApp.GetMainWindow().Focus();
         }));
 
         /// <summary></summary>
         public ICommand LinkElementSelection => _linkElementSelection ?? (_linkElementSelection = new VMCommand(obj =>
         {
-            var view = _selectionApp.GetMainWindow().Visibility;
-            view = WPFVisibility.Hidden;
             if (CheckMepTypes())
             {
+                Visibility = WPFVisibility.Hidden;
                 LinkElementReferences = _pickObjects.Select(
                     ObjectType.LinkedElement,
                     new SelectionFilter(_selectedMepType.AllowCategories, true, GetActiveUIEvent.ActiveDocument),
                     _linkElementReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     false);
+                Visibility = WPFVisibility.Visible;
             }
-            view = WPFVisibility.Visible;
-            _selectionApp.GetMainWindow().Focus();
         }));
 
         /// <summary></summary>
         public ICommand LinkHostSelection => _linkHostSelection ?? (_linkHostSelection = new VMCommand(obj =>
         {
-            var view = _selectionApp.GetMainWindow().Visibility;
-            view = WPFVisibility.Hidden;
             if (CheckHosts())
             {
+                Visibility = WPFVisibility.Hidden;
                 LinkHostReferences = _pickObjects.Select(
                     ObjectType.LinkedElement,
                     new SelectionFilter(_selectedHost.BuiltInCategory, true, GetActiveUIEvent.ActiveDocument),
                     _linkHostReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     true);
+
+                Visibility = WPFVisibility.Visible;
             }
-            view = WPFVisibility.Visible;
-            _selectionApp.GetMainWindow().Focus();
         }));
         #endregion Properties
 
@@ -426,7 +434,7 @@ namespace FireBoost.Features.Selection.ViewModels
             SelectedShape = _shapesArray?[0];
             SelectedStructuralDesign = _structuralDesignsArray?[0];
 
-            HasInsulation =
+            
             IsDimensionsManually = true;
 
             _docMepCount =
@@ -454,12 +462,12 @@ namespace FireBoost.Features.Selection.ViewModels
             }
 
             var data = _dBContext.Get(
-            SelectedHost.DBId,
-            (int)SelectedShape.Shape,
-            SelectedMepType.Type,
-            (int)SelectedMaterial.SealingMaterialType,
-            (int)SelectedStructuralDesign.StructuralDesign,
-            SelectedFireResistance.Minutes);
+            _selectedHost.DBId,
+            (int)_selectedShape.Shape,
+            _selectedMepType.Type,
+            (int)_selectedMaterial.SealingMaterialType,
+            (int)_selectedStructuralDesign.StructuralDesign,
+            _selectedFireResistances.Minutes);
 
             if (data == default)
             {
@@ -510,7 +518,7 @@ namespace FireBoost.Features.Selection.ViewModels
                 MessageBox.Show("Тип коммуникаций не выбран", "Информация", MessageBoxButton.OK, icon: MessageBoxImage.Information);
                 return false;
             }
-            if (SelectedMepType.AllowCategories.Length == 0)
+            if (SelectedMepType.AllowCategories.Length == 0 || IsIgnoringMep)
             {
                 MessageBox.Show("Выбор коммуникаций не требуется", "Информация", MessageBoxButton.OK, icon: MessageBoxImage.Information);
                 return false;
