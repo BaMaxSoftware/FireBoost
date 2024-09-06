@@ -370,3 +370,11 @@ FodyWeavers.xsd
 /InstallActions
 /Licencse
 /Obfuscation
+/ExternalCommands/CreateDividedParts.cs
+/Features/Explorer/ExplorerApp.cs
+/Features/Explorer/RvtTemplate.cs
+/Features/Explorer/RvtView.cs
+/Features/Explorer/Views/ExplorerWindow.xaml
+/Features/Explorer/Views/ExplorerWindow.xaml.cs
+/Features/Explorer/ViewModels/ExplorerVM.cs
+/Features/Explorer/Models/ElevationWatcherUpdater.cs
