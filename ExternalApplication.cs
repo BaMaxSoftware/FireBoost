@@ -1,10 +1,14 @@
-﻿using System.Drawing;
-using System.IO;
-using System.Reflection;
+﻿using System;
+using System.Drawing;
+using System.Windows.Interop;
+using System.Windows;
 using System.Windows.Media.Imaging;
 using Autodesk.Revit.Attributes;
 using Autodesk.Revit.UI;
 using FireBoost.Properties;
+using License;
+using Autodesk.Revit.DB;
+using FireBoost.ExternalCommands;
 
 namespace FireBoost
 {
@@ -15,8 +19,9 @@ namespace FireBoost
     [Regeneration(RegenerationOption.Manual)]
     public class ExternalApplication : IExternalApplication
     {
-        private readonly string _thisAssemblyPath = Assembly.GetExecutingAssembly().Location;
-        private RibbonPanel panel;
+        private readonly string _tabName = "FP Boost";
+        private RibbonPanel _panel;
+
         /// <summary>
         /// Implements the on Shutdown event
         /// </summary>
@@ -27,79 +32,77 @@ namespace FireBoost
         /// </summary>
         public Result OnStartup(UIControlledApplication application)
         {
-            if (TryCreateRibbonPanel(application, out panel, "FP Boost", "Проходки"))
+            try 
             {
-                AddButton(
-                    "SelectionButton",
-                    "FireBoost.ExternalCommands.SelectionCommand",
+                application.CreateRibbonTab(_tabName);
+            }
+            catch 
+            {
+                return Result.Cancelled;
+            }
+
+            if (TryCreateRibbonPanel(application, "Проходки"))
+            {
+                AddButton(typeof(SelectionCommand),
+                    "Selection",
                     "Подбор",
                     "Создание экземпляров огнестойких проходок, на основе выбранных исходных данных.",
                     Resources.PenetrationSeal4);
-                AddButton(
-                    "SpecificationsButton",
-                    "FireBoost.ExternalCommands.SpecificationsCommand",
+                AddButton(typeof(SpecificationsCommand),
+                    "Specifications",
                     "Спецификации",
                     "Копирование спецификации из выбранного шаблона.",
                     Resources.Schedules);
-                AddButton(
-                    "ParametersButton",
-                    "FireBoost.ExternalCommands.ParametersCommand",
+                AddButton(typeof(ParametersCommand),
+                    "Parameters",
                     "Настройки параметров",
                     "Настройки копирования значений из общих параметров проходок в параметры проекта.",
                     Resources.Parameters);
-                AddButton(
-                    "ManagerButton",
-                    "FireBoost.ExternalCommands.ManagerCommand",
+                AddButton(typeof(ManagerCommand),
+                    "Manager",
                     "Менеджер",
                     "Список всех существующих экземпляров огнестойких проходок с отображением их статуса.",
                     Resources.Manager);
             }
-
+            if (TryCreateRibbonPanel(application, "Лицензия"))
+            {
+                AddButton(typeof(LicenseUI),
+                    "License",
+                    "Ключ",
+                    "Задать ключ лицензии.",
+                    Resources.LicenseLogo);
+            }
             return Result.Succeeded;
         }
 
         /// <summary></summary>
-        public bool TryCreateRibbonPanel(UIControlledApplication a, out RibbonPanel panel, string tabName, string ribbonPanel)
+        private bool TryCreateRibbonPanel(UIControlledApplication a, string ribbonPanel)
         {
             try
             {
-                a.CreateRibbonTab(tabName);
-                panel = a.CreateRibbonPanel(tabName, ribbonPanel);
-                return true;
+                _panel = a.CreateRibbonPanel(_tabName, ribbonPanel);
             }
             catch
             {
-                panel = default;
-                return false;
+                _panel = null;
             }
+            return _panel != null;
         }
 
         /// <summary></summary>
-        private void AddButton(string btnName, string btnClassName, string btnTxt, string tooltip, Bitmap img, string longTooltip = null)
+        private void AddButton(Type assemblyType, string name, string text, string toolTip, Bitmap bitmap)
         {
-            PushButton button = panel.AddItem(new PushButtonData(btnName, btnTxt, _thisAssemblyPath, btnClassName)) as PushButton;
-            button.ToolTip = tooltip;
-            button.LargeImage = BitmapToImageSource(img);
-            if (longTooltip != null)
+            _panel.AddItem(new PushButtonData(name, text, assemblyType.Assembly.Location, $"{assemblyType.Namespace}.{assemblyType.Name}")
             { 
-                button.LongDescription = longTooltip;
-            }
+                ToolTip = toolTip,
+                LargeImage = BitmapToSource(bitmap),
+            });
         }
 
-        private BitmapImage BitmapToImageSource(Bitmap bitmap)
-        {
-            BitmapImage bitmapimage;
-            using (MemoryStream memory = new MemoryStream())
-            {
-                bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
-                memory.Position = 0;
-                bitmapimage = new BitmapImage();
-                bitmapimage.BeginInit();
-                bitmapimage.StreamSource = memory;
-                bitmapimage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapimage.EndInit();
-            }
-            return bitmapimage;
-        }
+        private BitmapSource BitmapToSource(Bitmap bitmap) => Imaging.CreateBitmapSourceFromHBitmap(
+            bitmap.GetHbitmap(),
+            IntPtr.Zero,
+            Int32Rect.Empty,
+            BitmapSizeOptions.FromEmptyOptions());
     }
 }

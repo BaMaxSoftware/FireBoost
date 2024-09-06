@@ -101,8 +101,19 @@
   <ItemGroup>
     <Compile Include="Domain\Data\Parameters.cs" />
     <Compile Include="Domain\Data\SealingData.cs" />
+    <Compile Include="Domain\Entities\CreationData.cs" />
     <Compile Include="Domain\Entities\DBSeal.cs" />
     <Compile Include="Domain\Entities\InstanceParameters.cs" />
+    <Compile Include="Domain\Enums\SelectionType.cs" />
+    <Compile Include="ExternalCommands\CreateDividedParts.cs" />
+    <Compile Include="Features\Explorer\ExplorerApp.cs" />
+    <Compile Include="Features\Explorer\Models\ElevationWatcherUpdater.cs" />
+    <Compile Include="Features\Explorer\RvtTemplate.cs" />
+    <Compile Include="Features\Explorer\RvtView.cs" />
+    <Compile Include="Features\Explorer\ViewModels\ExplorerVM.cs" />
+    <Compile Include="Features\Explorer\Views\ExplorerWindow.xaml.cs">
+      <DependentUpon>ExplorerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Features\Manager\ExternalEvents\ChangeCommentsEvent.cs" />
     <Compile Include="Features\Manager\ExternalEvents\ChangeTypeEvent.cs" />
     <Compile Include="Features\Manager\ExternalEvents\ChangeFamilyEvent.cs" />
@@ -138,6 +149,7 @@
     </Compile>
     <Compile Include="Features\Selection\Models\CreateEvent.cs" />
     <Compile Include="Features\Selection\Models\CreatorBase.cs" />
+    <Compile Include="Features\Selection\Models\CreatorOpenings.cs" />
     <Compile Include="Features\Selection\Models\CreatorWithMEP.cs" />
     <Compile Include="Features\Selection\Models\CreatorWithoutMEP.cs" />
     <Compile Include="Features\Selection\Models\GetUIDocumentEvent.cs" />
@@ -145,11 +157,18 @@
     <Compile Include="Features\Selection\Models\JoinWallOpenings.cs" />
     <Compile Include="Features\Selection\Models\SizeChanger.cs" />
     <Compile Include="Features\Selection\Models\Transactions.cs" />
+    <Compile Include="Features\Selection\Models\VMErrorsHandler.cs" />
     <Compile Include="Features\Selection\SelectionApp.cs" />
     <Compile Include="Features\Selection\Models\ErrorsHandler.cs" />
     <Compile Include="Features\Selection\Models\PickObjects.cs" />
     <Compile Include="Features\Selection\ViewModels\SelectionVM.cs" />
     <Compile Include="Features\Selection\ViewModels\SelectionVMBase.cs" />
+    <Compile Include="Features\Settings\OpeningsTaskData.xaml.cs">
+      <DependentUpon>OpeningsTaskData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Features\Settings\OpeningsData.xaml.cs">
+      <DependentUpon>OpeningsData.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Features\Specifications\SpecificationsApp.cs" />
     <Compile Include="Features\Specifications\SpecificationsVM.cs" />
     <Compile Include="Features\Specifications\SpecificationsWindow.xaml.cs">
@@ -178,6 +197,10 @@
     <None Include="Resources\FPBoost.db" />
   </ItemGroup>
   <ItemGroup>
+    <Page Include="Features\Explorer\Views\ExplorerWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Features\Manager\ManagerWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -189,6 +212,14 @@
     <Page Include="Features\Selection\Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Features\Settings\OpeningsTaskData.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Features\Settings\OpeningsData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Resources\ResourceDictionary.xaml">
       <SubType>Designer</SubType>

@@ -8,15 +8,15 @@ namespace FireBoost.Domain.Entities
         /// <summary></summary>
         public string Name { get; }
         /// <summary></summary>
-        public BuiltInCategory BuiltInCategory { get; }
+        public BuiltInCategory[] AllowedCategories { get; }
         /// <summary></summary>
         public int DBId { get; }
 
         /// <summary></summary>
-        public SealingHost(string name,  BuiltInCategory builtInCategory, int dBId)
+        public SealingHost(int dBId, string name,  BuiltInCategory[] allowedCategories)
         {
             Name = name;
-            BuiltInCategory = builtInCategory;
+            AllowedCategories = allowedCategories;
             DBId = dBId;
         }
 

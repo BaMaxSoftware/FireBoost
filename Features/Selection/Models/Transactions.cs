@@ -67,7 +67,6 @@ namespace FireBoost.Features.Selection.Models
             return result;
         }
 
-        /// <summary></summary>
         public FamilyInstance CreateNewInstance(FamilySymbol _familySymbol, XYZ locationPoint, Level level)
         {
             FamilyInstance instance = default;
@@ -99,7 +98,6 @@ namespace FireBoost.Features.Selection.Models
             return instance != default && !instance.IsValidObject ? default : instance;
         }
 
-        /// <summary></summary>
         public void ChangeInstanceElevation(FamilyInstance instance, double elevation)
         {
             if (instance.get_Parameter(BuiltInParameter.INSTANCE_FREE_HOST_OFFSET_PARAM) is Parameter hostOffset)
@@ -113,26 +111,7 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void ChangeJoinOpeningSize(Document doc, FamilyInstance newInstance, double height, double width)
-        {
-            using (Transaction t = new Transaction(doc))
-            {
-                try
-                { 
-                    t.Start("Изменение размеров");
-                    newInstance.get_Parameter(Parameters.OpeningHeight).Set(height);
-                    newInstance.get_Parameter(Parameters.OpeningWidth).Set(width);
-                    t.Commit();
-                }
-                catch 
-                {
-                    if (t.HasStarted())
-                        t.RollBack();
-                }
-            }
-        }
-
-        public void ChangeOpeningsDimensions(SealingShapeType shape, FamilyInstance instance, double height, double width, double diameter)
+        public void ChangeOpeningsDimensions(SealingShapeType shape, FamilyInstance instance, double height, double width, double diameter, double thickness)
         {
             using (Transaction t = new Transaction(Doc))
             {
@@ -149,6 +128,7 @@ namespace FireBoost.Features.Selection.Models
                             instance.get_Parameter(Parameters.OpeningDiameter).Set(diameter);
                             break;
                     }
+                    instance.get_Parameter(Parameters.OpeningThickness).Set(thickness);
                     t.Commit();
                 }
                 catch
@@ -159,52 +139,15 @@ namespace FireBoost.Features.Selection.Models
             }
         }
 
-        public void RotateInstance(FamilyInstance instance, Line axis, double angle)
-        {
-            using (Transaction t = new Transaction(Doc))
-            {
-                try
-                {
-                    t.Start("Поворот элемента");
-                    instance.Location.Rotate(axis, angle);
-                    t.Commit();
-                }
-                catch
-                {
-                    if (t.HasStarted())
-                        t.RollBack();
-                }
-            }
-        }
-
-        public void Move(FamilyInstance instance, XYZ vector)
-        {
-            using (Transaction t = new Transaction(Doc))
-            {
-                try
-                {
-                    t.Start("Смещение элемента");
-                    instance.Location.Move(vector);
-                    t.Commit();
-                }
-                catch 
-                {
-                    if (t.HasStarted())
-                        t.RollBack();
-                }
-            }
-        }
-
-        public void ChangeOtherParams(FamilyInstance newInstance, string duration, string minutes, SealingMaterialType material)
+        public void ChangeOtherParams(FamilyInstance newInstance, string minutes, SealingMaterialType material)
         {
             using (Transaction t = new Transaction(Doc))
             {
                 t.Start("Редактировать атрибуты элемента");
-                Parameter durationParameter = newInstance.get_Parameter(new Guid("ea2d4cab-8cba-43f6-bcfa-72003c13fd65"));
+                
                 Parameter fireParamParameter = newInstance.get_Parameter(new Guid("51548b59-1bdb-4692-ab6e-bbb4a5423aa0"));
-                if (durationParameter != null && !durationParameter.IsReadOnly && fireParamParameter != null && !fireParamParameter.IsReadOnly)
+                if (fireParamParameter != null && !fireParamParameter.IsReadOnly)
                 {
-                    durationParameter.SetValueString(duration);
                     fireParamParameter.SetValueString(minutes);
                 }
                 if (material == SealingMaterialType.PM)
@@ -333,7 +276,41 @@ namespace FireBoost.Features.Selection.Models
                 }
             }
         }
+
+        public void RotateInstance(FamilyInstance instance, Line axis, double angle)
+        {
+            using (Transaction t = new Transaction(Doc))
+            {
+                try
+                {
+                    t.Start("Поворот элемента");
+                    instance.Location.Rotate(axis, angle);
+                    t.Commit();
+                }
+                catch
+                {
+                    if (t.HasStarted())
+                        t.RollBack();
+                }
+            }
+        }
+
+        public void Move(FamilyInstance instance, XYZ vector)
+        {
+            using (Transaction t = new Transaction(Doc))
+            {
+                try
+                {
+                    t.Start("Смещение элемента");
+                    instance.Location.Move(vector);
+                    t.Commit();
+                }
+                catch
+                {
+                    if (t.HasStarted())
+                        t.RollBack();
+                }
+            }
+        }
     }
 }
-
-

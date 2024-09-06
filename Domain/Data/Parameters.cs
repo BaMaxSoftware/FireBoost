@@ -36,5 +36,9 @@ namespace FireBoost.Domain.Data
         /// Ширина проема
         /// </summary>
         public Guid OpeningWidth { get; } = new Guid("45b14688-97e2-4f09-ba8a-2ddc1bd5cbf3");
+        /// <summary>
+        /// Толщина ограждения
+        /// </summary>
+        public Guid OpeningThickness { get; } = new Guid("ea2d4cab-8cba-43f6-bcfa-72003c13fd65");
     }
 }

@@ -4,6 +4,7 @@ namespace FireBoost.Features.Selection.Models
 {
     internal class ErrorsHandler
     {
+        private readonly string _invalidThickness = "Значение поля \"Толщина\" не является числом.\nИзменить исходные данные?";
         private readonly string _invalidDiameter = "Значение поля \"Диаметр\" не является числом.\nИзменить исходные данные?";
         private readonly string _invalidHeight = "Значение поля \"Ширина\" не является числом.\nИзменить исходные данные?";
         private readonly string _invalidWidth = "Значение поля \"Высота\" не является числом.\nИзменить исходные данные?";
@@ -11,6 +12,7 @@ namespace FireBoost.Features.Selection.Models
         private readonly string _invalidFamily = "Семейство не найдено.\nИзменить исходные данные?";
         private readonly string _hasFamilies = "Файлы .rfa не найдены. Хотите выбрать путь к другой папке?";
 
+        public string InvalidThickness => _invalidThickness;
         public string InvalidDiameter => _invalidDiameter;
         public string InvalidHeight => _invalidHeight;
         public string InvalidWidth => _invalidWidth;

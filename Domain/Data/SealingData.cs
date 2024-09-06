@@ -10,10 +10,34 @@ namespace FireBoost.Domain.Data
         /// <summary></summary>
         public SealingHost[] CreateHostsTypesArray() => new SealingHost[]
         {
-            new SealingHost("Стена", BuiltInCategory.OST_Walls, 1),
-            new SealingHost("Перекрытие", BuiltInCategory.OST_Floors, 2),
-            new SealingHost("Стена - импорт из IFC", BuiltInCategory.OST_GenericModel, 1),
-            new SealingHost("Перекрытие - импорт из IFC", BuiltInCategory.OST_GenericModel, 2),
+            new SealingHost(1, "Витражные системы", 
+                new BuiltInCategory[] 
+                { 
+                    BuiltInCategory.OST_CurtaSystem, 
+                    BuiltInCategory.OST_CurtainWallPanels 
+                }),
+            new SealingHost(1, "Стена", 
+                new BuiltInCategory[] 
+                { 
+                    BuiltInCategory.OST_Walls,
+                    BuiltInCategory.OST_CurtainWallPanels
+                }),
+            new SealingHost(1, "Стена - импорт из IFC",
+                new BuiltInCategory[]
+                { 
+                    BuiltInCategory.OST_GenericModel,
+                    BuiltInCategory.OST_CurtainWallPanels
+                }),
+            new SealingHost(2, "Перекрытие", 
+                new BuiltInCategory[]
+                {
+                    BuiltInCategory.OST_Floors
+                }),
+            new SealingHost(2, "Перекрытие - импорт из IFC", 
+                new BuiltInCategory[]
+                {
+                    BuiltInCategory.OST_GenericModel
+                }),
         };
 
         /// <summary></summary>
@@ -147,22 +171,22 @@ namespace FireBoost.Domain.Data
         };
 
         /// <summary></summary>
-        public Entities.SealingMaterial[] CreateMaterialsArray() => new Entities.SealingMaterial[]
+        public SealingMaterial[] CreateMaterialsArray() => new SealingMaterial[]
         {
-            new Entities.SealingMaterial("П", "Пена", SealingMaterialType.P),
-            new Entities.SealingMaterial("М", "Минеральная плита", SealingMaterialType.M),
-            new Entities.SealingMaterial("ПМ", "Пена и минеральная плита", SealingMaterialType.PM)
+            new SealingMaterial("П", "Пена", SealingMaterialType.P),
+            new SealingMaterial("М", "Минеральная плита", SealingMaterialType.M),
+            new SealingMaterial("ПМ", "Пена и минеральная плита", SealingMaterialType.PM)
         };
 
         /// <summary></summary>
-        public Entities.SealingStructuralDesign[] CreateStructuralDesignsArray() => new SealingStructuralDesign[]
+        public SealingStructuralDesign[] CreateStructuralDesignsArray() => new SealingStructuralDesign[]
         {
-            new Entities.SealingStructuralDesign("(1)", "Односторонняя заделка проходки", SealingStructuralDesignType.OneSide),
-            new Entities.SealingStructuralDesign("(2)", "Двухсторонняя заделка проходки", SealingStructuralDesignType.TwoSided),
-            new Entities.SealingStructuralDesign("(М)", "С установкой кабельных разделительных металлорешеток", SealingStructuralDesignType.M),
-            new Entities.SealingStructuralDesign("(Т)", "С установкой узла увеличения глубины проемов", SealingStructuralDesignType.T),
-            new Entities.SealingStructuralDesign("(Э)", "Эксплуатируемая сборно-разборная заделка проходки", SealingStructuralDesignType.E),
-            new Entities.SealingStructuralDesign("(Р)", "Резервная заделка проходки без коммуникаций", SealingStructuralDesignType.R)
+            new SealingStructuralDesign("(1)", "Односторонняя заделка проходки", SealingStructuralDesignType.OneSide),
+            new SealingStructuralDesign("(2)", "Двухсторонняя заделка проходки", SealingStructuralDesignType.TwoSided),
+            new SealingStructuralDesign("(М)", "С установкой кабельных разделительных металлорешеток", SealingStructuralDesignType.M),
+            new SealingStructuralDesign("(Т)", "С установкой узла увеличения глубины проемов", SealingStructuralDesignType.T),
+            new SealingStructuralDesign("(Э)", "Эксплуатируемая сборно-разборная заделка проходки", SealingStructuralDesignType.E),
+            new SealingStructuralDesign("(Р)", "Резервная заделка проходки без коммуникаций", SealingStructuralDesignType.R)
         };
 
         /// <summary></summary>

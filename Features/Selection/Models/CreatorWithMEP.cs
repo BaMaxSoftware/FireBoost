@@ -6,6 +6,7 @@ using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 namespace FireBoost.Features.Selection.Models
@@ -18,6 +19,8 @@ namespace FireBoost.Features.Selection.Models
             ResultType = SolidCurveIntersectionMode.CurveSegmentsInside
         };
         
+        private Solid _hostSolid;
+        private Curve _elementCurve;
         
 
         public CreatorWithMEP(
@@ -26,69 +29,59 @@ namespace FireBoost.Features.Selection.Models
             Document activeDoc, 
             FamilySymbol familySymbol, 
             (double Height, double Width, double Diameter) dimensions,
-            double offset,
+            (double, double) offset,
             (int dimensions, int elevation) roundTo)
             : base(viewModel, _settingsViewModel, activeDoc, familySymbol, dimensions, offset, roundTo)
         {
         }
 
-        public void CreateInstances()
+
+        override public void CreateInstances()
         {
+            if (!TryCollectHosts(out (Element, Transform, XYZ)[] refsHosts))
+                return;
             (Element, Transform)[] refsElements = CollectElements();
-            (Element, Transform, XYZ)[] refsHosts = CollectHosts();
             JoinWallOpenings jo;
-            Line hostLine, intersectionLine;
-            FamilyInstanceList = new List<FamilyInstance>();
+            Line hostLine;
+            double slopeOffset = 0d;
+            SolidCurveIntersection intersections;
             foreach (var host in refsHosts)
             {
+                FamilyInstanceList = new List<FamilyInstance>();
                 CurrentHost = host;
-                if (CurrentHost.Element == default || !CurrentHost.Element.IsValidObject || CurrentHost.Element is FamilyInstance) continue;
+                if (CurrentHost.Element == default || !CurrentHost.Element.IsValidObject) continue;
 
-                Solid hostSolid = GetSolid(host);
-                if (hostSolid == null) continue;
+                _hostSolid = GetSolid(host);
+                if (_hostSolid == null) continue;
                 foreach (var element in refsElements)
                 {
                     CurrentElement = element;
                     if (CurrentElement.Instance == default || !CurrentElement.Instance.IsValidObject) continue;
 
-                    Curve elementCurve = GetCurve(element);
-                    if (elementCurve == null) continue;
-
-                    SolidCurveIntersection intersections = hostSolid.IntersectWithCurve(elementCurve, IntersectionOptions);
+                    _elementCurve = GetCurve(element);
+                    if (_elementCurve == null) continue;
+                    try
+                    {
+                        intersections = _hostSolid.IntersectWithCurve(_elementCurve, IntersectionOptions);
+                    }
+                    catch
+                    {
+                        continue;
+                    }
                     if (intersections.SegmentCount == 0) continue;
 
                     foreach (Curve intersection in intersections)
                     {
                         if (intersection is Line)
                         {
-                            intersectionLine = intersection as Line;
-
-                            XYZ point0 = intersectionLine.GetEndPoint(0);
-                            XYZ point1 = intersectionLine.GetEndPoint(1);
-                            double slopeOffset = 0d;
-                            if (CurrentHost.Element is Wall)
-                            {
-                                Wall wall = CurrentHost.Element as Wall;
-                                Curve wallCurve = (wall.Location as LocationCurve).Curve;
-                                if (wallCurve is Line)
-                                {
-                                    // todo : add slope
-                                    hostLine = intersectionLine;
-                                }
-                                else continue;
-                            }
-                            else
-                            {
-                                hostLine = intersectionLine;
-                            }
-                            
+                            hostLine = intersection as Line;
                             Level currentLevel = null;
                             double elevation = 0;
                             switch (SelectionViewModel.SelectedHost.DBId)
                             {
                                 case 1:
                                     currentLevel = GetLevel(CurrentElement.Instance, CurrentElement.Transform);
-                                    elevation = (point0.Z + point1.Z) / 2 - currentLevel?.Elevation ?? 0;
+                                    elevation = (hostLine.GetEndPoint(0).Z + hostLine.GetEndPoint(1).Z) / 2 - currentLevel?.Elevation ?? 0;
                                     break;
                                 case 2:
                                     if (CurrentHost.Element is DirectShape dShape)
@@ -137,7 +130,7 @@ namespace FireBoost.Features.Selection.Models
                                 ChangeInstanceElevation(newInstance, elevation);
                             }
                             ChangeSize(newInstance, slopeOffset);
-                            Rotate(newInstance);
+                            Rotate(newInstance, out XYZ orient, SelectionViewModel.SelectedHost.DBId == 1 ? hostLine : null);
                             Transactions.ChangeSelectedParams(ActiveDoc, _sizeChanger.SetOtherParams(newInstance, CurrentElement.Instance as MEPCurve, SelectionViewModel.SelectedShape.Shape));
                             ChangeProjectParameters(newInstance);
 
@@ -152,9 +145,9 @@ namespace FireBoost.Features.Selection.Models
                     }
                 }
 
-                if (SelectionViewModel.IsJoin && CurrentHost.Element != default && CurrentHost.Element is Wall)
+                if (SelectionViewModel.IsJoin && CurrentHost.Element != default && (CurrentHost.Element is Wall || CurrentHost.Element is Panel))
                 {
-                    jo = new JoinWallOpenings(SettingsViewModel, ActiveDoc, CurrentHost.Element as Wall, RoundTo);
+                    jo = new JoinWallOpenings(SettingsViewModel, ActiveDoc, RoundTo);
                     jo.Join(FamilyInstanceList.ToArray(), FamilySymbol, CurrentHost);
                 }
                 Transactions.Regenerate();
@@ -203,7 +196,7 @@ namespace FireBoost.Features.Selection.Models
         private Solid GetSolid((Element Element, Transform Transform, XYZ globalPoint) data)
         {
             Solid solid = default;
-
+            Solid tempSolid;
             GeometryElement geometry = data.Element.get_Geometry(Options);
             if (data.Transform != null)
             {
@@ -211,39 +204,66 @@ namespace FireBoost.Features.Selection.Models
             }
             foreach (GeometryObject geometryObject in geometry)
             {
-                if (geometryObject is GeometryElement gElement)
-                {
-                    foreach (GeometryObject item in gElement)
-                    {
-                        if (item is Solid newSolid)
-                        {
-                            if (solid == default)
-                                solid = newSolid;
-                            else
-                            {
-                                if (solid.Volume < newSolid.Volume)
-                                    solid = newSolid;
-                            }
-                        }
-                    }
+                switch (geometryObject)
+                { 
+                    case GeometryElement geometryElement:
+                        tempSolid = GetSolid(geometryElement);
+                        break;
+
+                    case GeometryInstance geometryInstance:
+                        tempSolid = GetSolid(geometryInstance.GetInstanceGeometry());
+                        break;
+
+                    case Solid s:
+                        tempSolid = s;
+                        break;
+
+                    default:
+                        continue;
                 }
-                else if (geometryObject is Solid)
+               
+                if (solid == default)
+                { 
+                    solid = tempSolid;
+                }
+                else
                 {
-                    Solid solid2 = geometryObject as Solid;
-
-                    if (solid == default)
-                        solid = solid2;
-                    else
-                    {
-                        if (solid.Volume < solid2.Volume)
-                            solid = solid2;
+                    if (solid.Volume < tempSolid.Volume)
+                    { 
+                        solid = tempSolid;
                     }
-
                 }
             }
 
             return solid;
         }
+
+        private Solid GetSolid(GeometryElement gelement)
+        {
+            Solid solid = default;
+            Solid tempSolid;
+            foreach (GeometryObject item in gelement)
+            {
+                if (item is Solid)
+                {
+                    tempSolid = item as Solid;
+                    if (solid == default)
+                    {
+                        solid = tempSolid;
+                    }
+                    else
+                    {
+                        if (solid.Volume < tempSolid.Volume)
+                        {
+                            solid = tempSolid;
+                        }
+                    }
+                }
+            }
+            return solid;
+        }
+
+
         private Curve GetCurve((Element Element, Transform Transform) data)
         {
             Curve curve = default;
@@ -262,20 +282,20 @@ namespace FireBoost.Features.Selection.Models
 
         private (Element, Transform)[] CollectElements()
         {
-            (Element, Transform)[] elements = new (Element, Transform)[SelectionViewModel.DocElementReferences.Count + SelectionViewModel.LinkElementReferences.Count];
+            (Element, Transform)[] elements = new (Element, Transform)[SelectionViewModel.SelectedDocElements.RefList.Count + SelectionViewModel.SelectedLinkElements.RefList.Count];
             Element element;
             int count = 0;
-            if (SelectionViewModel.DocElementReferences.Count > 0)
+            if (SelectionViewModel.SelectedDocElements.RefList.Count > 0)
             {
-                foreach (Reference host in SelectionViewModel.DocElementReferences)
+                foreach (Reference host in SelectionViewModel.SelectedDocElements.RefList)
                 {
                     elements[count] = (ActiveDoc.GetElement(host.ElementId), null);
                     count++;
                 }
             }
-            if (SelectionViewModel.LinkElementReferences.Count > 0)
+            if (SelectionViewModel.SelectedLinkElements.RefList.Count > 0)
             {
-                foreach (Reference host in SelectionViewModel.LinkElementReferences)
+                foreach (Reference host in SelectionViewModel.SelectedLinkElements.RefList)
                 {
                     element = ActiveDoc.GetElement(host.ElementId);
                     if (element is RevitLinkInstance link && host.LinkedElementId != ElementId.InvalidElementId)

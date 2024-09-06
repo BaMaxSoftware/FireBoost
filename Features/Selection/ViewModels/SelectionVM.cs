@@ -22,26 +22,14 @@ namespace FireBoost.Features.Selection.ViewModels
 
             if (showMsg)
             {
-                if (IsIgnoringMep)
+                if ((_selectedDocElements.RefList.Count == 0 &&
+                    _selectedLinkElements.RefList.Count == 0) &
+                    _selectedMepType.AllowedCategories.Length > 0)
                 {
-                    if (!IsDimensionsManually)
-                    {
-                        MessageBox.Show("Перед размещением \"Без коммуникаций\", требуется указать размеры проходок.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return false;
-                    }
+                    MessageBox.Show("Элементы коммуникаций не выбраны.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return false;
                 }
-                else
-                { 
-                    if ((_docElementReferences.Count == 0 &&
-                        _linkElementReferences.Count == 0) &
-                        _selectedMepType.AllowCategories.Length > 0)
-                    {
-                        MessageBox.Show("Элементы коммуникаций не выбраны.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
-                        return false;
-                    }
-                }
-                if (_docHostReferences.Count == 0 &&
-                        _linkHostReferences.Count == 0)
+                if (_selectedDocHosts.RefList.Count == 0 && _selectedLinkHosts.RefList.Count == 0)
                 {
                     MessageBox.Show("Элементы основы не выбраны.", "Предупреждение", MessageBoxButton.OK, MessageBoxImage.Information);
                     return false;
@@ -56,5 +44,8 @@ namespace FireBoost.Features.Selection.ViewModels
 
         /// <summary></summary>
         public void Start() => _selectionApp.Start();
+
+        /// <summary></summary>
+        public void GetActiveUIDocument() => _getActiveUIDocument.Raise();
     }
 }

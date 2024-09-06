@@ -1,8 +1,8 @@
-﻿using System.Data.SQLite;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
+using System.Data.SQLite;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 
 namespace FireBoost.Domain.Data
@@ -24,13 +24,11 @@ namespace FireBoost.Domain.Data
             List<string> families = new List<string>();
             try
             {
-                using (var connection = new SQLiteConnection(_dbConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(_dbConnectionString))
                 {
                     connection.Open();
-                    var command = connection.CreateCommand();
-                    command.CommandText = $@"select [Name] from RfaFamilies";
 
-                    using (var reader = command.ExecuteReader())
+                    using (SQLiteDataReader reader = new SQLiteCommand($@"select [Name] from RfaFamilies", connection).ExecuteReader())
                     {
                         if (reader.HasRows)
                         {
@@ -43,6 +41,8 @@ namespace FireBoost.Domain.Data
                             }
                         }
                     }
+
+                    connection.Close();
                 }
             }
             catch (Exception e)
@@ -53,28 +53,28 @@ namespace FireBoost.Domain.Data
         }
 
         /// <summary></summary>
-        public (string Family, string FamilyType) Get(int DBId, int Shape, int Type, int SealingMaterialType, int StructuralDesign, int Minutes)
+        public (string Family, string FamilyType) Get(int hostCategoryId, int shapeId, int type, int materialId, int structuralDesignId, int minutes)
         {
             (string, string) result = default;
             try
             {
-                using (var connection = new SQLiteConnection(_dbConnectionString))
+                using (SQLiteConnection connection = new SQLiteConnection(_dbConnectionString))
                 {
                     connection.Open();
-                    var command = connection.CreateCommand();
+                    SQLiteCommand command = connection.CreateCommand();
                     command.CommandText = $@"
 SELECT rfa.Name,fType.TypeName
 FROM Sealing seal 
 INNER JOIN RfaFamilies rfa ON seal.FamilyId = rfa.Id
 INNER JOIN RfaFamilyTypes fType ON seal.FamilyTypeId = fType.Id
-WHERE HostCategoryId = {DBId}
-AND OpeningShapeId == {Shape}
-AND Type == {Type}
-AND StructuralDesignId == {StructuralDesign}
-AND MaterialId == {SealingMaterialType}
-AND FireResistance == {Minutes};";
+WHERE HostCategoryId = {hostCategoryId}
+AND OpeningShapeId == {shapeId}
+AND Type == {type}
+AND StructuralDesignId == {structuralDesignId}
+AND MaterialId == {materialId}
+AND FireResistance == {minutes};";
 
-                    using (var reader = command.ExecuteReader())
+                    using (SQLiteDataReader reader = command.ExecuteReader())
                     {
                         if (reader.HasRows)
                         {
@@ -88,6 +88,7 @@ AND FireResistance == {Minutes};";
                             }
                         }
                     }
+                    connection.Close();
                 }
             }
             catch (Exception e)

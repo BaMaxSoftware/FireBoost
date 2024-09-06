@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
-using Autodesk.Revit.DB;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Selection;
 using FireBoost.Domain.Data;
@@ -16,28 +13,28 @@ using WPFVisibility = System.Windows.Visibility;
 
 namespace FireBoost.Features.Selection.ViewModels
 {
-    public partial class SelectionVM : INotifyPropertyChanged, IDataErrorInfo
+    public partial class SelectionVM : INotifyPropertyChanged
     {
         #region Fields
-        private readonly ExternalEvent _getActiveUIDocument;
         private readonly string _familyNameDefault = "<Не найдено>";
         private readonly string _familyTypeDefault = "<Не найден>";
+        private readonly DBContext _dBContext = new DBContext();
+        private readonly SealingData _sealingData = new SealingData();
+        
+        private readonly SelectionApp _selectionApp;
         private readonly SealingFireResistance[] _fireResistancesArray;
         private readonly SealingMaterial[] _materialsArray;
-        private readonly SealingMEPType[] _mEPTypesArray;
+        private readonly SealingMEPType[] _mepTypesArray;
         private readonly SealingShape[] _shapesArray;
         private readonly SealingStructuralDesign[] _structuralDesignsArray;
-        private readonly SelectionApp _selectionApp;
-        private readonly SealingHost[] _hostsArray;
-        private readonly DBContext _dBContext = new DBContext();
-        private readonly PickObjects _pickObjects = new PickObjects();
-        private readonly SealingData _sealingData = new SealingData();
+        
+        private readonly ExternalEvent _getActiveUIDocument, _selectionDocElementsEvent, _selectionDocHostsEvent, _selectionLinkElementsEvent, _selectionLinkHostsEvent;
+        private readonly PickObjectsEventHandler _selectedDocElements, _selectedLinkElements, _selectedDocHosts, _selectedLinkHosts;
 
-        internal readonly GetUIDocumentEvent GetActiveUIEvent;
+        private readonly GetUIDocumentEventHandler _getActiveUIEvent;
 
-        private WPFVisibility _visibility;
-        private bool _isJoin, _isDimensionsManually, _buttonOKIsEnabled, _isIgnoringMep, _isMepSelectionEnabled;
-        private int _docMepCount, _docHostCount, _linkMepCount, _linkHostCount;
+        private bool _isJoin, _isDimensionsManually, _buttonOKIsEnabled, _isMepSelectionEnabled;
+        private string _dimensionsRoundTo, _elevationRoundTo, _diameter, _height, _width, _offset, _familyFromDb, _typeFromDb, _thickness;
         private string _dimensionsRoundTo, _elevationRoundTo, _diameter, _height, _width, _offset, _familyFromDb, _typeFromDb;
         private ListCollectionView _communicationsTypes;
         private SealingFireResistance _selectedFireResistances;
@@ -46,121 +43,58 @@ namespace FireBoost.Features.Selection.ViewModels
         private SealingMEPType _selectedMepType;
         private SealingShape _selectedShape;
         private SealingStructuralDesign _selectedStructuralDesign;
-        private IList<Reference> _docElementReferences, _docHostReferences, _linkElementReferences, _linkHostReferences;
+        
         private ICommand _docElementSelection, _docHostSelection, _linkElementSelection, _linkHostSelection;
         #endregion Fields
 
+        /// <summary></summary>
+        public PickObjectsEventHandler SelectedDocElements { get => _selectedDocElements; }
+        /// <summary></summary>
+        public PickObjectsEventHandler SelectedLinkElements { get => _selectedLinkElements; }
+        /// <summary></summary>
+        public PickObjectsEventHandler SelectedDocHosts { get => _selectedDocHosts; }
+        /// <summary></summary>
+        public PickObjectsEventHandler SelectedLinkHosts { get => _selectedLinkHosts; }
         #region Properties
-        /// <summary></summary>
-        public WPFVisibility Visibility { get => _visibility; set => ChangeProperty(ref _visibility, value); }
-
-        /// <summary></summary>
+        
         public bool IsMepSelectionEnabled
-        {
+        public bool HasInsulation
             get => _isMepSelectionEnabled;
             set => ChangeProperty(ref _isMepSelectionEnabled, value);
         }
 
-        /// <summary></summary>
-        public bool IsIgnoringMep
-        {
-            get => _isIgnoringMep;
-            set
-            { 
-                ChangeProperty(ref _isIgnoringMep, value);
-                IsMepSelectionEnabled = _isIgnoringMep == false;
-            }
         }
-
         /// <summary></summary>
         public bool IsJoin 
         {
             get => _isJoin;
             set => ChangeProperty(ref _isJoin, value); 
         }
+
         /// <summary></summary>
-        public IList<Reference> DocElementReferences
-        {
-            get => _docElementReferences;
-            set
-            {
-                TryChangeProperty(ref _docElementReferences, value);
-                DocMepCount = _docElementReferences.Count;
-            }
-        }
-        /// <summary></summary>
-        public IList<Reference> DocHostReferences
-        {
-            get => _docHostReferences;
-            set
-            {
-                TryChangeProperty(ref _docHostReferences, value);
-                DocHostCount = _docHostReferences.Count;
-            }
-        }
-        /// <summary></summary>
-        public IList<Reference> LinkElementReferences
-        {
-            get => _linkElementReferences;
-            set
-            {
-                TryChangeProperty(ref _linkElementReferences, value);
-                LinkMepCount = _linkElementReferences.Count;
-            }
-        }
-        /// <summary></summary>
-        public IList<Reference> LinkHostReferences
-        {
-            get => _linkHostReferences;
-            set
-            {
-                TryChangeProperty(ref _linkHostReferences, value);
-                LinkHostCount = _linkHostReferences.Count;
-            }
+        public string Thickness 
+        { 
+            get => _thickness;
+            set => ChangeProperty(ref _thickness, value);
         }
 
         /// <summary></summary>
-        public string FamilyFromDb { get => _familyFromDb; set => ChangeProperty(ref _familyFromDb, value); }
-        /// <summary></summary>
-        public string TypeFromDb { get => _typeFromDb; set => ChangeProperty(ref _typeFromDb, value); }
-        /// <summary></summary>
-        public bool ButtonOKIsEnabled { get => _buttonOKIsEnabled; set => ChangeProperty(ref _buttonOKIsEnabled, value); }
-
-        /// <summary></summary>
-        public int DocMepCount
-        {
-            get => _docMepCount;
-            set
-            {
-                TryChangeProperty(ref _docMepCount, value);
-            }
+        public string FamilyFromDb 
+        { 
+            get => _familyFromDb;
+            set => ChangeProperty(ref _familyFromDb, value);
         }
         /// <summary></summary>
-        public int DocHostCount
-        {
-            get => _docHostCount;
-            set
-            {
-                TryChangeProperty(ref _docHostCount, value);
-            }
+        public string TypeFromDb 
+        { 
+            get => _typeFromDb;
+            set => ChangeProperty(ref _typeFromDb, value);
         }
         /// <summary></summary>
-        public int LinkMepCount
-        {
-            get => _linkMepCount;
-            set
-            {
-                TryChangeProperty(ref _linkMepCount, value);
-            }
-        }
-        /// <summary></summary>
-        public int LinkHostCount
-        {
-            get => _linkHostCount;
-            set
-            {
-                TryChangeProperty(ref _linkHostCount, value);
-            }
+        public bool ButtonOKIsEnabled 
+        { 
+            get => _buttonOKIsEnabled;
+            set => ChangeProperty(ref _buttonOKIsEnabled, value);
         }
 
         /// <summary></summary>
@@ -199,13 +133,14 @@ namespace FireBoost.Features.Selection.ViewModels
             get => _offset;
             set => TryChangeProperty(ref _offset, value);
         }
-                /// <summary></summary>
+        /// <summary></summary>
         public bool IsDimensionsManually
         {
             get => _isDimensionsManually;
             set
             {
                 ChangeProperty(ref _isDimensionsManually, value);
+                IsMepSelectionEnabled = !_isDimensionsManually;
             }
         }
         /// <summary></summary>
@@ -215,12 +150,10 @@ namespace FireBoost.Features.Selection.ViewModels
             set
             {
                 if (TryChangeProperty(ref _selectedMepType, value))
-                { 
-                    IsIgnoringMep = _selectedMepType.AllowCategories.Length == 0;
-
-                    if (_linkElementReferences.Count > 0)
-                        LinkElementReferences = new List<Reference>();
-                    if (_docElementReferences.Count > 0)
+                    if (_selectedLinkElements.RefList.Count > 0)
+                        _selectedLinkElements.RefListClear();
+                    if (_selectedDocElements.RefList.Count > 0)
+                        _selectedDocElements.RefListClear();
                         DocElementReferences = new List<Reference>();
                     SearchInDB();
                 }
@@ -233,11 +166,11 @@ namespace FireBoost.Features.Selection.ViewModels
             set
             {
                 if (TryChangeProperty(ref _selectedHost, value))
-                { 
-                    if (_linkHostReferences.Count > 0)
-                        LinkHostReferences = new List<Reference>();
-                    if (_docHostReferences.Count > 0)
-                        DocHostReferences = new List<Reference>();
+                {
+                    if (_selectedLinkHosts.RefList.Count > 0)
+                        _selectedLinkHosts.RefListClear();
+                    if (_selectedDocHosts.RefList.Count > 0)
+                        _selectedDocHosts.RefListClear();
                     SearchInDB();
                 }
             }
@@ -293,7 +226,7 @@ namespace FireBoost.Features.Selection.ViewModels
             })());
 
         /// <summary></summary>
-        public SealingMEPType[] MEPTypesArray => _mEPTypesArray;
+        public SealingMEPType[] MEPTypesArray => _mepTypesArray;
         /// <summary></summary>
         public SealingFireResistance[] FireResistancesArray => _fireResistancesArray;
         /// <summary></summary>
@@ -308,170 +241,119 @@ namespace FireBoost.Features.Selection.ViewModels
 
         /// <summary></summary>
         public ICommand DocElementSelection => _docElementSelection ?? (_docElementSelection = new VMCommand(obj =>
-        {
-            if (CheckMepTypes())
-            {
-                Visibility = WPFVisibility.Hidden;
-                DocElementReferences = _pickObjects.Select(
-                    ObjectType.Element,
-                    new SelectionFilter(_selectedMepType.AllowCategories, false, GetActiveUIEvent.ActiveDocument),
+            if (CheckMEPs())
+            var view = _selectionApp.GetMainWindow().Visibility;
+                _selectedDocElements.SetSelectionFilter(_selectedMepType.AllowedCategories);
+                _selectionDocElementsEvent.Raise();
                     _docElementReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     false);
-                Visibility = WPFVisibility.Visible;
             }
         }));
 
         /// <summary></summary>
         public ICommand DocHostSelection => _docHostSelection ?? (_docHostSelection = new VMCommand(obj =>
-        {
-            if (CheckHosts())
-            {
-                Visibility = WPFVisibility.Hidden;
-                DocHostReferences = _pickObjects.Select(
-                    ObjectType.Element,
-                    new SelectionFilter(_selectedHost.BuiltInCategory, false, GetActiveUIEvent.ActiveDocument),
+                _selectedDocHosts.SetSelectionFilter(_selectedHost.AllowedCategories);
+                _selectionDocHostsEvent.Raise();
                     _docHostReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     true);
-                Visibility = WPFVisibility.Visible;
             }
         }));
 
-        /// <summary></summary>
+            if (CheckMEPs())
         public ICommand LinkElementSelection => _linkElementSelection ?? (_linkElementSelection = new VMCommand(obj =>
-        {
-            if (CheckMepTypes())
-            {
-                Visibility = WPFVisibility.Hidden;
-                LinkElementReferences = _pickObjects.Select(
+                _selectedLinkElements.SetSelectionFilter(_selectedMepType.AllowedCategories);
+                _selectionLinkElementsEvent.Raise();
                     ObjectType.LinkedElement,
                     new SelectionFilter(_selectedMepType.AllowCategories, true, GetActiveUIEvent.ActiveDocument),
                     _linkElementReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     false);
-                Visibility = WPFVisibility.Visible;
             }
         }));
 
-        /// <summary></summary>
-        public ICommand LinkHostSelection => _linkHostSelection ?? (_linkHostSelection = new VMCommand(obj =>
-        {
-            if (CheckHosts())
-            {
-                Visibility = WPFVisibility.Hidden;
-                LinkHostReferences = _pickObjects.Select(
+                _selectedLinkHosts.SetSelectionFilter(_selectedHost.AllowedCategories);
+                _selectionLinkHostsEvent.Raise();
                     ObjectType.LinkedElement,
                     new SelectionFilter(_selectedHost.BuiltInCategory, true, GetActiveUIEvent.ActiveDocument),
                     _linkHostReferences,
                     GetActiveUIEvent.ActiveUIDocument,
                     true);
-
-                Visibility = WPFVisibility.Visible;
             }
         }));
         #endregion Properties
 
-        #region Реализация IDataErrorInfo
-        /// <summary></summary>
-        public string this[string columnName]
-        {
-            get
-            {
-                string error = string.Empty;
-                switch (columnName)
-                {
-                    case "Height":
-                        TryParseToDouble(_height, out error);
-                        break;
-                    case "Width":
-                        TryParseToDouble(_width, out error);
-                        break;
-                    case "Diameter":
-                        TryParseToDouble(_diameter, out error);
-                        break;
-                    case "Offset":
-                        TryParseToDouble(_offset, out error);
-                        break;
-                    case "DimensionsRoundTo":
-                        TryParseToInt(_dimensionsRoundTo, out error);
-                        break;
-                    case "ElevationRoundTo":
-                        TryParseToInt(_elevationRoundTo, out error);
-                        break;
-                }
-                return error;
-            }
-        }
-
-        /// <summary></summary>
-        public string Error => throw new NotImplementedException();
-        #endregion Реализация IDataErrorInfo
-
         /// <summary></summary>
         public event PropertyChangedEventHandler PropertyChanged;
-
+        
         /// <summary></summary>
-        public SelectionVM(SelectionApp selectionApp)
+        public SelectionVM(SelectionApp app)
         {
-            _selectionApp = selectionApp;
+            _selectionApp = app;
+
+            _selectedLinkElements = new PickObjectsEventHandler(ObjectType.LinkedElement, false);
+            _selectionLinkElementsEvent = ExternalEvent.Create(_selectedLinkElements);
+
+            _selectedLinkHosts = new PickObjectsEventHandler(ObjectType.LinkedElement, true);
+            _selectionLinkHostsEvent = ExternalEvent.Create(_selectedLinkHosts);
+
+            _selectedDocElements = new PickObjectsEventHandler(ObjectType.Element, false);
+            _selectionDocElementsEvent = ExternalEvent.Create(_selectedDocElements);
+            
+            _selectedDocHosts = new PickObjectsEventHandler(ObjectType.Element, true);
+            _selectionDocHostsEvent = ExternalEvent.Create(_selectedDocHosts);
+
             _hostsArray = _sealingData.CreateHostsTypesArray();
-            _mEPTypesArray = _sealingData.CreateMEPTypesArray();
-            _fireResistancesArray = _sealingData.CreateFireResistancesArray();
-            _materialsArray = _sealingData.CreateMaterialsArray();
-            _structuralDesignsArray = _sealingData.CreateStructuralDesignsArray();
-            _shapesArray = _sealingData.CreateShapesArray();
-
-            _docElementReferences =
-            _docHostReferences =
-            _linkElementReferences =
-            _linkHostReferences = new List<Reference>();
-
-            SelectedFireResistance = _fireResistancesArray?[0];
-            SelectedHost = _hostsArray?[0];
-            SelectedMaterial = _materialsArray?[0];
+            
+            SelectedFireResistance = _fireResistancesArray[0];
+            SelectedHost = _hostsArray[0];
+            SelectedMaterial = _materialsArray[0];
+            SelectedMepType = _mepTypesArray[0];
+            SelectedShape = _shapesArray[0];
+            SelectedStructuralDesign = _structuralDesignsArray[0];
+            
             SelectedMepType = _mEPTypesArray?[0];
             SelectedShape = _shapesArray?[0];
             SelectedStructuralDesign = _structuralDesignsArray?[0];
 
-            
+            HasInsulation =
             IsDimensionsManually = true;
-
-            _docMepCount =
-            _docHostCount =
-            _linkMepCount =
-            _linkHostCount = 0;
 
             _dimensionsRoundTo =
             _elevationRoundTo =
             _diameter =
             _height =
             _width =
+            _thickness =
             _offset = "0";
-            GetActiveUIEvent = new GetUIDocumentEvent();
-            _getActiveUIDocument = ExternalEvent.Create(GetActiveUIEvent);
+            _getActiveUIEvent = new GetUIDocumentEventHandler();
+            _getActiveUIDocument = ExternalEvent.Create(_getActiveUIEvent);
         }
-
         
+
         private void SearchInDB()
         {
             if (!IsValidData(false))
             {
-                ButtonOKIsEnabled = false;
-                return;
-            }
-
-            var data = _dBContext.Get(
-            _selectedHost.DBId,
-            (int)_selectedShape.Shape,
-            _selectedMepType.Type,
-            (int)_selectedMaterial.SealingMaterialType,
-            (int)_selectedStructuralDesign.StructuralDesign,
-            _selectedFireResistances.Minutes);
+                _selectedHost.DBId,
+                (int)_selectedShape.Shape,
+                _selectedMepType.Type,
+                (int)_selectedMaterial.SealingMaterialType,
+                (int)_selectedStructuralDesign.StructuralDesign,
+                _selectedFireResistances.Minutes);
+            (int)SelectedShape.Shape,
+            SelectedMepType.Type,
+            (int)SelectedMaterial.SealingMaterialType,
+            (int)SelectedStructuralDesign.StructuralDesign,
+            SelectedFireResistance.Minutes);
 
             if (data == default)
             {
-                SetFamilyAndSymbolDefault();
+                if (_familyFromDb != _familyNameDefault)
+                    FamilyFromDb = _familyNameDefault;
+                if (_typeFromDb != _familyTypeDefault)
+                    TypeFromDb = _familyTypeDefault;
                 ButtonOKIsEnabled = false;
             }
             else
@@ -481,24 +363,6 @@ namespace FireBoost.Features.Selection.ViewModels
                 ButtonOKIsEnabled = true;
             }
         }
-
-        private void SetFamilyAndSymbolDefault()
-        {
-            if (_familyFromDb != _familyNameDefault)
-                FamilyFromDb = _familyNameDefault;
-            if (_typeFromDb != _familyTypeDefault)
-                TypeFromDb = _familyTypeDefault;
-        }
-
-        private void TryParseToInt(string value, out string error) =>
-            error = int.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out int ret) ?
-                (ret < 0 || ret > int.MaxValue ? $"Допустимые значения: 0-{int.MaxValue}" : string.Empty) :
-                "Не является числом";
-
-        private void TryParseToDouble(string value, out string error) =>
-            error = double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out double ret) ?
-                (ret < 0 || ret > double.MaxValue ? $"Допустимые значения: 0-{double.MaxValue}" : string.Empty) :
-                "Не является числом";
 
         private bool CheckHosts()
         {
@@ -511,14 +375,14 @@ namespace FireBoost.Features.Selection.ViewModels
             return true;
         }
 
-        private bool CheckMepTypes()
+        private bool CheckMEPs()
         {
-            if (SelectedMepType == null)
+            if (SelectedMepType.AllowedCategories.Length == 0 || IsDimensionsManually)
             {
                 MessageBox.Show("Тип коммуникаций не выбран", "Информация", MessageBoxButton.OK, icon: MessageBoxImage.Information);
                 return false;
             }
-            if (SelectedMepType.AllowCategories.Length == 0 || IsIgnoringMep)
+            if (SelectedMepType.AllowCategories.Length == 0)
             {
                 MessageBox.Show("Выбор коммуникаций не требуется", "Информация", MessageBoxButton.OK, icon: MessageBoxImage.Information);
                 return false;
@@ -528,7 +392,7 @@ namespace FireBoost.Features.Selection.ViewModels
         }
 
         /// <summary></summary>
-        protected virtual bool TryChangeProperty<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = "")
+        private bool TryChangeProperty<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = "")
         {
             bool result = !ReferenceEquals(oldValue, newValue);
             if (result)
@@ -546,7 +410,7 @@ namespace FireBoost.Features.Selection.ViewModels
         }
 
         /// <summary></summary>
-        protected virtual void ChangeProperty<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = "")
+        private void ChangeProperty<T>(ref T oldValue, T newValue, [CallerMemberName] string propertyName = "")
         {
             if (!ReferenceEquals(oldValue, newValue))
             {
@@ -554,10 +418,5 @@ namespace FireBoost.Features.Selection.ViewModels
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
             }
         }
-
-        /// <summary></summary>
-        public void GetActiveUIDocument() => _getActiveUIDocument.Raise();
-
-        
     }
 }

@@ -1,0 +1,225 @@
+﻿<UserControl x:Class="FireBoost.Features.Settings.OpeningsData"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:FireBoost.Features.Settings"
+             mc:Ignorable="d" >
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/FireBoost;component/Resources/ResourceDictionary.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid d:Width="350" Margin="10">
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel d:Background="White" CanVerticallyScroll="True" CanHorizontallyScroll="True">
+                <GroupBox Header="В стенах"
+                          Style="{DynamicResource GroupBoxSettingsMain}">
+                    <StackPanel>
+                        <GroupBox Header="Прямоугольное сечение"
+                                  Style="{DynamicResource GroupBoxSettings}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Семейство"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="0"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRechtOpening, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование семейства."
+                                         Grid.Row="0"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Высота"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="1"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRechtOpeningHeight, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="1"
+                                         Grid.Column="1"/>
+                                <TextBlock Text="Ширина"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="2"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRechtOpeningWidth, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="2"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Толщина"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="3"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRechtOpeningThickness, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="3"
+                                         Grid.Column="1"/>
+
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Круглое сечение" 
+                                  Style="{DynamicResource GroupBoxSettings}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Семейство"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="0"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRoundOpening, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование семейства."
+                                         Grid.Row="0"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Диаметр"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="1"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRoundOpeningDiameter, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="1"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Толщина"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="2"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=WallRoundOpeningThickness, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="2"
+                                         Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Header="В перекрытиях"
+                          Style="{DynamicResource GroupBoxSettingsMain}">
+                    <StackPanel>
+                        <GroupBox Header="Прямоугольное сечение" 
+                                  Style="{DynamicResource GroupBoxSettings}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Семейство"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="0"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRechtOpening, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование семейства."
+                                         Grid.Row="0"
+                                         Grid.Column="1"/>
+                                <TextBlock Text="Высота"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="1"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRechtOpeningHeight, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="1"
+                                         Grid.Column="1"/>
+                                <TextBlock Text="Ширина"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="2"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRechtOpeningWidth, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="2"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Толщина"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="3"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRechtOpeningThickness, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="3"
+                                         Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                        <GroupBox Header="Круглое сечение" 
+                                  Style="{DynamicResource GroupBoxSettings}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                    <RowDefinition Height="*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="70"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Text="Семейство"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="0"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRoundOpening, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование семейства."
+                                         Grid.Row="0"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Диаметр"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="1"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRoundOpeningDiameter, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="1"
+                                         Grid.Column="1"/>
+
+                                <TextBlock Text="Толщина"
+                                           Style="{DynamicResource TextBlockStyle1}"
+                                           Grid.Row="2"
+                                           Grid.Column="0"/>
+                                <TextBox Text="{Binding Path=FloorRoundOpeningThickness, Mode = TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                         Style="{DynamicResource TextBoxSettingsStyle}"
+                                         ToolTip="Введите наименование параметра."
+                                         Grid.Row="2"
+                                         Grid.Column="1"/>
+                            </Grid>
+                        </GroupBox>
+                    </StackPanel>
+                </GroupBox>
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</UserControl>
+

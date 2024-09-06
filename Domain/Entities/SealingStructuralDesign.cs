@@ -10,10 +10,10 @@ namespace FireBoost.Domain.Entities
         /// <summary></summary>
         public string Descripcions { get; }
         /// <summary></summary>
-        public Enums.SealingStructuralDesignType StructuralDesign { get; }
+        public SealingStructuralDesignType StructuralDesign { get; }
 
         /// <summary></summary>
-        public SealingStructuralDesign(string mark, string descripcions, Enums.SealingStructuralDesignType structuralDesign)
+        public SealingStructuralDesign(string mark, string descripcions, SealingStructuralDesignType structuralDesign)
         {
             Mark = mark;
             Descripcions = descripcions;

@@ -1,32 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime;
 using System.Windows;
 using Autodesk.Revit.DB;
-using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
-using Newtonsoft.Json.Linq;
 
 namespace FireBoost.Features.Selection.Models
 {
     internal class JoinWallOpenings
     {
-        /// <summary>
-        /// Внутренний диаметр отверстия
-        /// </summary>
-        private readonly Guid _openingDiameter = new Guid("fac76ca8-0f8a-4b5f-91ff-018aff5bad25");
-        /// <summary>
-        /// Высота проема
-        /// </summary>
-        private readonly Guid _openingHeight = new Guid("43b69be4-81ef-4528-95dc-6f5dd4d1c041");
-        /// <summary>
-        /// Ширина проема
-        /// </summary>
-        private readonly Guid _openingWidth = new Guid("45b14688-97e2-4f09-ba8a-2ddc1bd5cbf3");
         private readonly Options _options;
+        private readonly SettingsVM _settings;
+        private readonly Transactions _transactions;
 
-        private int busbarHeight, busbarWidth;
         private int cableTrayHeight, cableTrayWidth;
         private int ductHeight, ductWidth;
         private int mepDiameter;
@@ -35,19 +21,15 @@ namespace FireBoost.Features.Selection.Models
         private XYZ _maxX, _minX;
         private XYZ _maxY, _minY;
         private XYZ _maxZ, _minZ;
-        private SettingsVM _settings;
         
         private Document Doc { get; }
-        private Wall SelectedWall { get; }
         private FamilyInstance[] _familyInstances;
-        private Transactions _transactions;
         (int dimensions, int elevation) _roundTo;
 
-        public JoinWallOpenings(SettingsVM settings, Document doc, Wall selectedWall, (int dimensions, int elevation) roundTo)
+        public JoinWallOpenings(SettingsVM settings, Document doc, (int dimensions, int elevation) roundTo)
         {
             _settings = settings;
             Doc = doc;
-            SelectedWall = selectedWall;
             _options = new Options();
             _transactions = new Transactions(Doc);
             _roundTo = roundTo;
@@ -89,12 +71,11 @@ namespace FireBoost.Features.Selection.Models
             return (width, height);
         }
 
-        public void Join(FamilyInstance[] familyInstances, FamilySymbol symbol, (Element Element, Transform Transform, XYZ GlobalPoint) _currentHost)
+        public void Join(FamilyInstance[] familyInstances, FamilySymbol symbol, (Element Element, Transform Transform, XYZ GlobalPoint) host)
         {
 
             if (familyInstances == null || familyInstances.Length == 0) return;
-            busbarHeight =
-            busbarWidth =
+          
             cableTrayHeight =
             cableTrayWidth =
             ductHeight =
@@ -122,20 +103,44 @@ namespace FireBoost.Features.Selection.Models
             Level lvl = SelectCurrentLevel(ref elevation);
             if (lvl == default) return;
 
-            XYZ wallHalfWidth = SelectedWall.Orientation.Multiply(SelectedWall.Width / 2);
-            Line hostLine = Line.CreateBound(_location - wallHalfWidth, _location + wallHalfWidth);
+            XYZ halfWidth;
+            switch (host.Element)
+            {
+                case Wall wall:
+                    halfWidth = (host.Transform == null ? wall.Orientation : host.Transform.OfVector(wall.Orientation)).Multiply(wall.Width / 2);
+                    break;
+                case Panel panel:
+                    halfWidth = (host.Transform == null 
+                        ? panel.FacingOrientation 
+                        : host.Transform.OfVector(panel.FacingOrientation.Negate())).Multiply(panel.PanelType.get_Parameter(BuiltInParameter.CURTAIN_WALL_SYSPANEL_THICKNESS)?.AsDouble() / 2 ?? 1);
+                    break;
+                default: halfWidth = null;
+                    break;
+            }
+            if (halfWidth == null)
+                return;
+           
+            Line hostLine = Line.CreateBound(_location - halfWidth, _location + halfWidth);
+
             XYZ loc = hostLine.GetEndPoint(0) + (hostLine.Length / 2 * hostLine.Direction);
 
             List<(string, double)> dimensions = new List<(string, double)>();
 
+            Guid thicknessGuid = new Guid("ea2d4cab-8cba-43f6-bcfa-72003c13fd65");
+            double thickness = 0;
+            double tempThickness;
             using (Transaction t = new Transaction(Doc, "Удалить выбранные"))
             {
                 t.Start();
                 foreach (FamilyInstance element in _familyInstances)
                 {
+                    tempThickness = element.get_Parameter(thicknessGuid)?.AsDouble() ?? 0;
+                    if (thickness < tempThickness)
+                        thickness = tempThickness;
                     (string, double)[] temp = GetOtherParams(element);
                     if (temp.Any(x => !string.IsNullOrEmpty(x.Item1)))
                     {
+
                         dimensions.AddRange(temp);
                     }
                     Doc.Delete(element.Id);
@@ -144,22 +149,8 @@ namespace FireBoost.Features.Selection.Models
             }
             FamilyInstance newInstance = _transactions.CreateNewInstance(symbol, loc, lvl);
 
-            if (_roundTo.elevation != 0)
-            {
-                elevation = RoundToMM(_roundTo.elevation, elevation);
-            }
-
-            _transactions.ChangeInstanceElevation(newInstance, elevation);
-            _transactions.ChangeJoinOpeningSize(Doc, newInstance, height, width);
-
-            if (_currentHost.Element is Wall wall)
-            {
-                //_transactions.Move(ref newInstance, (_currentHost.Transform == null ? wall.Orientation : _currentHost.Transform.OfVector(wall.Orientation)) * wall.Width / 2);
-            }
-            else if (_currentHost.Element is Floor floor)
-            {
-                //_transactions.Move(ref newInstance, new XYZ(0, 0, -1) * floor.get_Parameter(BuiltInParameter.FLOOR_ATTR_THICKNESS_PARAM).AsDouble() / 2);
-            }
+            _transactions.ChangeInstanceElevation(newInstance, _roundTo.elevation == 0 ? elevation : RoundToMM(_roundTo.elevation, elevation));
+            _transactions.ChangeOpeningsDimensions(Domain.Enums.SealingShapeType.Reachtangle, newInstance, height, width, 0, thickness);
 
             if (_settings.Parameters != default && _settings.Parameters.Length > 0)
             {
@@ -184,12 +175,6 @@ namespace FireBoost.Features.Selection.Models
 
         private double GetWidth(out XYZ mid)
         {
-            if (!((SelectedWall.Location as LocationCurve).Curve is Line))
-            {
-                mid = default;
-                return -1;
-            }
-
             FamilyInstance fi1 = default, fi2 = default;
             XYZ c1, c2;
             XYZ cc1 = null, cc2 = null;
@@ -219,7 +204,7 @@ namespace FireBoost.Features.Selection.Models
                 mid = default;
                 return -1;
             }
-
+            Guid _openingWidth = new Guid("45b14688-97e2-4f09-ba8a-2ddc1bd5cbf3");
             Line newLine = Line.CreateBound(cc1, cc2);
             newLine = Line.CreateBound(
                 newLine.GetEndPoint(0).Add(newLine.Direction.Negate().Multiply(fi1.get_Parameter(_openingWidth).AsDouble() / 2)),
@@ -235,6 +220,7 @@ namespace FireBoost.Features.Selection.Models
             double hMax = double.MinValue;
             double hMin = double.MaxValue;
             BoundingBoxXYZ bBox;
+            Guid _openingHeight = new Guid("43b69be4-81ef-4528-95dc-6f5dd4d1c041");
             foreach (FamilyInstance e in _familyInstances)
             {
                 instanceHeight = e.get_Parameter(_openingHeight).AsDouble() / 2;
@@ -265,30 +251,16 @@ namespace FireBoost.Features.Selection.Models
                 .Cast<Level>()
                 .Where(x => x.Elevation <= tempElev);
 
-            if (levelsCollector.Count() == 0)
+            Level[] levels = levelsCollector.ToArray();
+            if (levels.Length == 0)
             {
                 MessageBox.Show($"Не найдены уровни ниже отметки {Math.Round(tempElev * 304.8d, 3)}.");
                 return default;
             }
-            Level[] levels = levelsCollector.ToArray();
             double maxElevation = levels.Max(x => x.Elevation);
             Level lvl = levels.First(x => x.Elevation == maxElevation);
             elevation -= lvl.Elevation;
             return lvl;
-        }
-
-
-        private bool ToDo(string name, FamilyInstance instance, out (string, double) data)
-        {
-            data = (null, -1);
-            bool ret = false;
-            double? temp = instance.LookupParameter(name)?.AsDouble();
-            if (temp != null)
-            {
-                ret = true;
-                data = (name, (double)temp);
-            }
-            return ret;
         }
 
         private (string, double)[] GetOtherParams(FamilyInstance newInstance)
@@ -370,7 +342,7 @@ namespace FireBoost.Features.Selection.Models
             return ret;
         }
 
-        public double RoundToMM(int roundTo, double value)
+        private double RoundToMM(int roundTo, double value)
         {
             double feetToMm = Math.Round(value * 304.8d, 2);
             return feetToMm - Math.Round(feetToMm % roundTo, 2) + roundTo;

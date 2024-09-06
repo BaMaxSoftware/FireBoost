@@ -2,6 +2,7 @@
 using Autodesk.Revit.UI;
 using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Settings;
+using System.Linq;
 
 namespace FireBoost.Features.Selection.Models
 {
@@ -13,28 +14,28 @@ namespace FireBoost.Features.Selection.Models
             Document activeDoc,
             FamilySymbol familySymbol,
             (double Height, double Width, double Diameter) dimensions,
-            double offset,
+            (double, double) offset,
             (int dimensions, int elevation) roundTo)
             : base(viewModel, _settingsViewModel, activeDoc, familySymbol, dimensions, offset, roundTo)
         { }
 
-        public void CreateInstances()
+        override public void CreateInstances()
         {
+            if (!TryCollectHosts(out (Element Element, Transform Transform, XYZ Location)[] refsHosts))
+                return;
+
             FamilyInstance instance;
-            (Element, Transform, XYZ)[] refsHosts = CollectHosts();
-
-
             foreach ((Element hostElement, Transform hostTransform, XYZ globalPoint) host in refsHosts)
             {
                 CurrentHost = host;
-                if (host.hostElement == default || !host.hostElement.IsValidObject || host.hostElement is FamilyInstance) continue;
+                if (host.hostElement == default || !host.hostElement.IsValidObject) continue;
                 Level level = GetNearestLevel(host.globalPoint.Z);
                 instance = Transactions.CreateNewInstance(FamilySymbol, host.globalPoint, level);
                 ChangeInstanceElevation(instance, host.globalPoint.Z - level.Elevation);
                 ChangeSize(instance);
-                Rotate(instance);
+                Rotate(instance, out XYZ orient);
                 ChangeProjectParameters(instance);
-                Move(instance);
+                Move(instance, orient);
             }
         }
     }

@@ -5,10 +5,12 @@ using FireBoost.Features.Json;
 using FireBoost.Features.Selection.ViewModels;
 using FireBoost.Features.Selection.Views;
 using FireBoost.Features.Settings;
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
+using Visibility = System.Windows.Visibility;
 
 namespace FireBoost.Features.Selection.Models
 {
@@ -16,26 +18,30 @@ namespace FireBoost.Features.Selection.Models
     {
         private readonly ErrorsHandler _errorsHandler;
         private readonly JsonHandler _json;
-        private readonly MainWindow _mainWindow;
         private readonly SelectionVM _viewModel;
 
-        private double _offset;
+        private (double Offset, double Thickness) _offsets;
         private Document _activeDoc;
         private FamilySymbol _familySymbol;
         private SettingsVM _settingsViewModel;
         private SettingsWindow _settingsWindow;
         private (double Height, double Width, double Diameter) _dimensions = default;
         private (string Name, string TypeName) _familyName;
-        private (int Dimensions, int Elevation) _roundTo;
+        
+        enum ValidationStatus
+        { 
+            INVALID,
+            Success,
+            Return,
+            Exit
+        }
 
         public CreateEvent(
-            MainWindow mainWindow,
             SelectionVM viewModel,
             JsonHandler json,
             ErrorsHandler errorsHandler,
             SettingsVM settingsViewModel)
         {
-            _mainWindow = mainWindow;
             _viewModel = viewModel;
             _json = json;
             _errorsHandler = errorsHandler;
@@ -47,106 +53,207 @@ namespace FireBoost.Features.Selection.Models
 
         public void Execute(UIApplication app)
         {
-            _activeDoc = app.ActiveUIDocument.Document;
-            Start();
+            _activeDoc = app?.ActiveUIDocument?.Document;
+            if (_activeDoc == null)
+            {
+                MessageBox.Show("Не найден объект, представляющий открытый проект Autodesk Revit.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+            
+            SingletonWindow.SetVisibility(Visibility.Hidden);
+            switch (Validation())
+            {
+                case ValidationStatus.Success:
+                    Create();
+                    break;
+
+                case ValidationStatus.Exit:
+                    SingletonWindow.Close();
+                    return;
+
+                case ValidationStatus.Return:
+                default:
+                    break;
+            }
+            SingletonWindow.SetVisibility(Visibility.Visible);
         }
 
-        private void Start()
+        private ValidationStatus CheckFamilyData()
         {
-            _mainWindow.Visibility = System.Windows.Visibility.Hidden;
-
-            _activeDoc = _viewModel.GetActiveUIEvent.ActiveDocument;
-
-            if (_viewModel.IsValidData())
+            ValidationStatus result;
+            _familyName = (_viewModel.FamilyFromDb, _viewModel.TypeFromDb);
+            if (_familyName == default)
             {
-                _familyName = (_viewModel.FamilyFromDb, _viewModel.TypeFromDb);
+                result = _errorsHandler.ShowQuestion(_errorsHandler.InvalidFamily) == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+            }
+            else
+            { 
+                result = ValidationStatus.Success;
+            }
+            return result;
+        }
 
-                if (_familyName == default)
+        private ValidationStatus CheckOffset()
+        {
+            ValidationStatus result;
+            if (double.TryParse(_viewModel.Offset, out _offsets.Offset))
+            {
+                _offsets.Offset = _offsets.Offset * 0.0032808d * 2;
+                result = ValidationStatus.Success;
+            }
+            else
+            {
+                result = _errorsHandler.ShowQuestion(_errorsHandler.InvalidOffset) == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+            }
+            return result;
+        }
+
+        private ValidationStatus CheckThickness()
+        {
+            ValidationStatus result;
+            if (double.TryParse(_viewModel.Thickness, out _offsets.Thickness))
+            {
+                _offsets.Thickness *= 0.0032808d;
+                result = ValidationStatus.Success;
+            }
+            else
+            {
+                result = _errorsHandler.ShowQuestion(_errorsHandler.InvalidThickness) == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+            }
+            return result;
+        }
+
+        private ValidationStatus CheckRoundDimensions()
+        {
+            ValidationStatus result;
+            if (double.TryParse(_viewModel.Diameter, out _dimensions.Diameter))
+            {
+                if (_dimensions.Diameter > 0)
                 {
-                    if (_errorsHandler.ShowQuestion(_errorsHandler.InvalidFamily) == MessageBoxResult.No) return;
+                    _dimensions.Diameter *= 0.0032808d;
+                    result = ValidationStatus.Success;
                 }
                 else
                 {
-                    if (LoadFamilySymbol(_familyName) == TransactionStatus.Committed)
+                    result = _errorsHandler.ShowZeroValue("Диаметр") == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+                }
+            }
+            else
+            {
+                result = _errorsHandler.ShowQuestion(_errorsHandler.InvalidDiameter) == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+            }
+            return result;
+        }
+
+        private ValidationStatus CheckRechtangularDimensions()
+        {
+            ValidationStatus result;
+            if (double.TryParse(_viewModel.Height, out _dimensions.Height))
+            {
+                if (_dimensions.Height > 0)
+                {
+                    if (double.TryParse(_viewModel.Width, out _dimensions.Width))
                     {
-                        if (double.TryParse(_viewModel.Offset, out _offset))
+                        if (_dimensions.Width > 0)
                         {
-                            _offset = _offset * 0.0032808d * 2;
-                            if (_viewModel.IsDimensionsManually)
-                            {
-                                if (_viewModel.SelectedShape.Shape == SealingShapeType.Round)
-                                {
-                                    if (double.TryParse(_viewModel.Diameter, out _dimensions.Diameter))
-                                    {
-                                        if (_dimensions.Diameter > 0)
-                                        {
-                                            _dimensions.Diameter *= 0.0032808d;
-                                            Create();
-                                        }
-                                        else
-                                        {
-                                            if (_errorsHandler.ShowZeroValue("Диаметр") == MessageBoxResult.No) return;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (_errorsHandler.ShowQuestion(_errorsHandler.InvalidDiameter) == MessageBoxResult.No) return;
-                                    }
-                                }
-                                else
-                                {
-                                    if (double.TryParse(_viewModel.Height, out _dimensions.Height))
-                                    {
-                                        if (_dimensions.Height > 0)
-                                        {
-                                            if (double.TryParse(_viewModel.Width, out _dimensions.Width))
-                                            {
-                                                if (_dimensions.Width > 0)
-                                                {
-                                                    _dimensions.Height *= 0.0032808d;
-                                                    _dimensions.Width *= 0.0032808d;
-                                                    Create();
-                                                }
-                                                else
-                                                {
-                                                    if (_errorsHandler.ShowZeroValue("Ширина") == MessageBoxResult.No) return;
-                                                }
-                                            }
-                                            else
-                                            {
-                                                if (_errorsHandler.ShowQuestion(_errorsHandler.InvalidHeight) == MessageBoxResult.No) return;
-                                            }
-                                        }
-                                        else
-                                        {
-                                            if (_errorsHandler.ShowZeroValue("Высота") == MessageBoxResult.No) return;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        if (_errorsHandler.ShowQuestion(_errorsHandler.InvalidWidth) == MessageBoxResult.No) return;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                if (_viewModel.SelectedMepType.AllowCategories.Length > 0)
-                                {
-                                    _dimensions = default;
-                                    Create();
-                                }
-                            }
+                            _dimensions.Height *= 0.0032808d;
+                            _dimensions.Width *= 0.0032808d;
+                            result = ValidationStatus.Success;
                         }
                         else
                         {
-                            if (_errorsHandler.ShowQuestion(_errorsHandler.InvalidOffset) == MessageBoxResult.No)
-                                return;
+                            result = _errorsHandler.ShowZeroValue("Ширина") == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
                         }
                     }
+                    else
+                    {
+                        result = _errorsHandler.ShowQuestion(_errorsHandler.InvalidHeight) == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+                    }
+                }
+                else
+                {
+                    result = _errorsHandler.ShowZeroValue("Высота") == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
                 }
             }
-            
-            _mainWindow.Visibility = System.Windows.Visibility.Visible;
+            else
+            {
+                result = _errorsHandler.ShowQuestion(_errorsHandler.InvalidWidth) == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+            }
+            return result;
+        }
+
+        private ValidationStatus CheckDimensionsManually()
+        {
+            ValidationStatus result;
+            if (_offsets.Thickness <= 0)
+            {
+                return _errorsHandler.ShowZeroValue("Толщина") == MessageBoxResult.No ? ValidationStatus.Exit : ValidationStatus.Return;
+            }
+
+            switch (_viewModel.SelectedShape.Shape)
+            {
+                case SealingShapeType.Round:
+                    result = CheckRoundDimensions();
+                    break;
+                case SealingShapeType.Reachtangle:
+                    result = CheckRechtangularDimensions();
+                    break;
+                default: 
+                    result = ValidationStatus.Return;
+                    break;
+            }
+            return result;
+        }
+
+        private ValidationStatus Validation()
+        {
+            ValidationStatus result = ValidationStatus.Return;
+            if (!_viewModel.IsValidData())
+                return result;
+
+            result = CheckFamilyData();
+            if (result != ValidationStatus.Success)
+                return result;
+
+            if (LoadFamilySymbol(_familyName) != TransactionStatus.Committed)
+                return ValidationStatus.Return;
+
+            result = CheckOffset();
+            if (result != ValidationStatus.Success)
+                return result;
+
+            result = CheckThickness();
+            if (result != ValidationStatus.Success)
+                return result;
+
+            _dimensions = default;
+            if (_viewModel.IsDimensionsManually)
+            {
+                result = CheckDimensionsManually();
+            }
+            else
+            {
+                if (_viewModel.SelectedMepType.AllowedCategories.Length > 0)
+                {
+                    result = ValidationStatus.Success;
+                }
+                else 
+                {
+                    new TaskDialog("Предупреждение")
+                    {
+                        TitleAutoPrefix = false,
+                        CommonButtons = TaskDialogCommonButtons.Ok,
+                        MainContent = "Для выбранного типа коммуникаций необходимо указать размеры проходки.",
+                        MainIcon = TaskDialogIcon.TaskDialogIconInformation
+                    }.Show();
+                    
+                    result = ValidationStatus.Return;
+                }
+            }
+            return result;
+            _mainWindow.Focus();
+            _mainWindow.Focus();
+            _mainWindow.Focus();
         }
 
         private string[] GetFiles()
@@ -170,11 +277,10 @@ namespace FireBoost.Features.Selection.Models
                 }
                 result = GetFiles();
             };
-
             return result;
         }
-        /// <summary></summary>
-        public string[] GetFiles(string path) => !string.IsNullOrEmpty(path) ? Directory.Exists(path) ? Directory.GetFiles(path).Where(x => Path.GetExtension(x) == ".rfa").ToArray() : null : null;
+        
+        private string[] GetFiles(string path) => !string.IsNullOrEmpty(path) ? Directory.Exists(path) ? Directory.GetFiles(path).Where(x => Path.GetExtension(x) == ".rfa").ToArray() : null : null;
 
         private TransactionStatus LoadFamilySymbol((string name, string typeName) family)
         {
@@ -212,23 +318,23 @@ namespace FireBoost.Features.Selection.Models
             .WhereElementIsElementType()
             .Cast<FamilySymbol>()
             .FirstOrDefault(x => x.FamilyName == family.Name && x.Name == family.TypeName);
-
-        private void Create()
-        {
-            if (_activeDoc == null && !_activeDoc.IsValidObject)
-                return;
+            (int Dimensions, int Elevation) roundUp = (
             _roundTo = (
-                int.TryParse(_viewModel.DimensionsRoundTo, out int dRoundTo) ? dRoundTo : 0,
-                int.TryParse(_viewModel.ElevationRoundTo, out int eRoundTo) ? eRoundTo : 0);
-
-            if (_viewModel.SelectedMepType.AllowCategories.Length == 0 || _viewModel.IsIgnoringMep)
+            _roundTo = (
+            _roundTo = (
+            CreatorBase creator;
+            if (_viewModel.SelectedMepType.AllowedCategories.Length == 0 || _viewModel.IsDimensionsManually)
+            if (_viewModel.SelectedMepType.AllowCategories.Length == 0)
+            if (_viewModel.SelectedMepType.AllowCategories.Length == 0)
+            if (_viewModel.SelectedMepType.AllowCategories.Length == 0)
             {
-                new CreatorWithoutMEP(_viewModel, _settingsViewModel, _activeDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
+                creator = new CreatorWithoutMEP(_viewModel, _settingsViewModel, _activeDoc, _familySymbol, _dimensions, _offsets, roundUp);
             }
             else
             {
-                new CreatorWithMEP(_viewModel, _settingsViewModel, _activeDoc, _familySymbol, _dimensions, _offset, _roundTo).CreateInstances();
+                creator = new CreatorWithMEP(_viewModel, _settingsViewModel, _activeDoc, _familySymbol, _dimensions, _offsets, roundUp);
             }
+            creator.CreateInstances();
         }
     }
 }

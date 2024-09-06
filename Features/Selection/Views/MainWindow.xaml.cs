@@ -26,23 +26,6 @@ namespace FireBoost.Features.Selection.Views
 
         private void ButtonSettings_Click(object sender, RoutedEventArgs e) => _vm.SettingsShowDialog();
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            _vm.GetActiveUIDocument();
-        }
-
-        private void Window_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
-        {
-            switch (Visibility)
-            {
-                case Visibility.Visible:
-                    this.Focus(); 
-                    break;
-                case Visibility.Collapsed:
-                case Visibility.Hidden:
-                    _vm.GetActiveUIDocument();
-                    break;
-            }
-        }
+        private void Window_Loaded(object sender, RoutedEventArgs e) => _vm.GetActiveUIDocument();
     }
 }

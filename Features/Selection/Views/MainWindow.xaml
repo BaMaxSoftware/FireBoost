@@ -13,9 +13,7 @@
         ResizeMode="NoResize"
         Title="Подбор"
         d:DataContext="{d:DesignInstance Type=vm:SelectionVM, IsDesignTimeCreatable=False}"
-        SizeToContent="Height" 
-        Visibility="{Binding Visibility, Mode=TwoWay}" 
-        Loaded="Window_Loaded" IsVisibleChanged="Window_IsVisibleChanged">
+        SizeToContent="Height">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -154,6 +152,7 @@
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="25"/>
+                        <RowDefinition Height="25"/>
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="101"/>
@@ -194,10 +193,9 @@
                                        Grid.Column="0"
                                        Text="Диаметр"/>
 
-                            <TextBox x:Name="HeightTextBox" 
+                            <TextBox Style="{DynamicResource TextBoxStyle1}"
                                      Grid.Row="0"
-                                     Grid.Column="1" 
-                                     Style="{DynamicResource TextBoxStyle1}">
+                                     Grid.Column="1">
                                 <TextBox.Text>
                                     <Binding Path="Height" >
                                         <Binding.ValidationRules>
@@ -206,10 +204,9 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <TextBox x:Name="WidthTextBox"
+                            <TextBox Style="{DynamicResource TextBoxStyle1}"
                                      Grid.Row="1"
-                                     Grid.Column="1"
-                                     Style="{DynamicResource TextBoxStyle1}">
+                                     Grid.Column="1">
                                 <TextBox.Text>
                                     <Binding Path="Width" >
                                         <Binding.ValidationRules>
@@ -218,10 +215,9 @@
                                     </Binding>
                                 </TextBox.Text>
                             </TextBox>
-                            <TextBox x:Name="DiametrTextBox"
+                            <TextBox Style="{StaticResource TextBoxStyle1}"
                                      Grid.Row="2"
-                                     Grid.Column="1"
-                                     Style="{StaticResource TextBoxStyle1}">
+                                     Grid.Column="1">
                                 <TextBox.Text>
                                     <Binding Path="Diameter">
                                         <Binding.ValidationRules>
@@ -237,10 +233,9 @@
                                Grid.Row="2"
                                Grid.Column="0"
                                Text="Зазор"/>
-                    <TextBox x:Name="OffsetTextBox"
+                    <TextBox Style="{DynamicResource TextBoxStyle1}"
                              Grid.Row="2"
-                             Grid.Column="1"
-                             Style="{DynamicResource TextBoxStyle1}">
+                             Grid.Column="1">
                         <TextBox.Text>
                             <Binding Path="Offset" >
                                 <Binding.ValidationRules>
@@ -249,6 +244,26 @@
                             </Binding>
                         </TextBox.Text>
                     </TextBox>
+                    <TextBlock Style="{DynamicResource TextBlockStyle1}"
+                               Grid.Row="2"
+                               Grid.Column="0"
+                               Text="Зазор"/>
+                    <TextBlock Style="{DynamicResource TextBlockStyle1}"
+                               Grid.Row="3"
+                               Grid.Column="0"
+                               Text="Толщина"/>
+                    <TextBox Grid.Row="3"
+                             Grid.Column="1"
+                             Style="{DynamicResource TextBoxStyle1}">
+                        <TextBox.Text>
+                            <Binding Path="Thickness" >
+                                <Binding.ValidationRules>
+                                    <DataErrorValidationRule />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+
                 </Grid>
                 <Grid>
                     <Grid.RowDefinitions>
@@ -332,8 +347,9 @@
                                     Margin="0,5"
                                     Content="Коммуникации"
                                     Command="{Binding DocElementSelection}"/>
-                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
-                            <TextBlock Text="{Binding Path=DocMepCount}" 
+                            <TextBlock Text="Выбрано:" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=SelectedDocElements.Count}" 
                                        Style="{DynamicResource TextBlockStyle1}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
@@ -342,8 +358,9 @@
                                     Margin="0,5"
                                     Content="Стены/перекрытия"
                                     Command="{Binding DocHostSelection}"/>
-                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
-                            <TextBlock Text="{Binding Path=DocHostCount}" 
+                            <TextBlock Text="Выбрано:"
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=SelectedDocHosts.Count}" 
                                        Style="{DynamicResource TextBlockStyle1}"/>
                         </StackPanel>
                     </StackPanel>
@@ -360,8 +377,9 @@
                                     Margin="0,5"
                                     Content="Коммуникации"
                                     Command="{Binding LinkElementSelection}"/>
-                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
-                            <TextBlock Text="{Binding Path=LinkMepCount}" 
+                            <TextBlock Text="Выбрано:" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=SelectedLinkElements.Count}" 
                                        Style="{DynamicResource TextBlockStyle1}"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
@@ -370,8 +388,9 @@
                                     Margin="0,5"
                                     Content="Стены/перекрытия"
                                     Command="{Binding LinkHostSelection}"/>
-                            <TextBlock Text="Выбрано:" Style="{DynamicResource TextBlockStyle1}"/>
-                            <TextBlock Text="{Binding Path=LinkHostCount}" 
+                            <TextBlock Text="Выбрано:" 
+                                       Style="{DynamicResource TextBlockStyle1}"/>
+                            <TextBlock Text="{Binding Path=SelectedLinkHosts.Count}" 
                                        Style="{DynamicResource TextBlockStyle1}"/>
                         </StackPanel>
                     </StackPanel>

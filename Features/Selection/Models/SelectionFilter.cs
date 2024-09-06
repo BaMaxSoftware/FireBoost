@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI.Selection;
 
@@ -7,50 +6,43 @@ namespace FireBoost.Features.Selection.Models
 {
     internal class SelectionFilter : ISelectionFilter
     {
-        private readonly Document _document;
-        private readonly List<BuiltInCategory> _builtInCategories = new List<BuiltInCategory>();
-        private readonly BuiltInCategory _builtInCategory = BuiltInCategory.INVALID;
+        private readonly int[] _builtInCategoryIds;
+        private readonly int _builtInCategoryId = -1;
         private readonly bool _linkChecking;
-        public SelectionFilter(IEnumerable<BuiltInCategory> builtInCategories, bool linkChecking, Document document = null)
+        private Document _document;
+        private Document _linkDocument;
+        private Element _currentElement;
+        private RevitLinkInstance _linkInstance;
+
+        public SelectionFilter(BuiltInCategory[] builtInCategories, bool linkChecking, Document document = null)
         {
             _linkChecking = linkChecking;
             _document = document;
-            _builtInCategories.AddRange(builtInCategories);
+            _builtInCategoryIds = builtInCategories.Select(x => (int)x).ToArray();
         }
-        public SelectionFilter(BuiltInCategory builtInCategories, bool linkChecking, Document document = null)
+        public SelectionFilter(BuiltInCategory builtInCategory, bool linkChecking, Document document = null)
         {
             _linkChecking = linkChecking;
             _document = document;
-            _builtInCategory = builtInCategories;
+            _builtInCategoryId = (int)builtInCategory;
         }
 
-        public virtual bool AllowElement(Element elem)
-        {
-            if (elem != null)
-            {
-                if (_linkChecking & elem is RevitLinkInstance)
-                {
-                    return true;
-                }
-                else
-                {
-                    return CheckElementCategory(elem);
-                }
-            }
-            return false;
-        }
+        public void SetDocument(Document doc) => _document = doc;
 
-        private Document linkDocument;
+        public virtual bool AllowElement(Element elem) => elem != null && _linkChecking & elem is RevitLinkInstance || CheckElementCategory(elem);
+
 
         public virtual bool AllowReference(Reference reference, XYZ position)
         {
             bool ret = false;
             if (reference.LinkedElementId != ElementId.InvalidElementId)
             {
-                if (_document.GetElement(reference.ElementId) is RevitLinkInstance link)
+                _currentElement = _document.GetElement(reference.ElementId);
+                if (_currentElement is RevitLinkInstance)
                 {
-                    linkDocument = link.GetLinkDocument();
-                    ret = CheckElementCategory(linkDocument.GetElement(reference.LinkedElementId));
+                    _linkInstance = _currentElement as RevitLinkInstance;
+                    _linkDocument = _linkInstance.GetLinkDocument();
+                    ret = CheckElementCategory(_linkDocument.GetElement(reference.LinkedElementId));
                 }
             }
             else
@@ -65,36 +57,31 @@ namespace FireBoost.Features.Selection.Models
         {
             if (element != null)
             {
-                if (element.Category is Category category)
+                if (element.Category is Category category )
                 {
-                    if (_builtInCategory == BuiltInCategory.INVALID)
+                    if (_builtInCategoryId == -1)
                     {
-                        return _builtInCategories.Any(x => (int)x == category.Id.IntegerValue);
+                        if (_builtInCategoryIds.Contains(category.Id.IntegerValue))
+                        { 
+                            switch (element)
+                            {
+                                case Wall wall:
+                                    return wall.CurtainGrid == null;
+                                case CurtainSystem cs:
+                                    return cs.CurtainGrids.Size == 0;
+                                case Panel panel:
+                                    return panel.Host != null && _builtInCategoryIds.Contains(panel.Host.Category.Id.IntegerValue);
+                                default: return true;
+                            }
+                        }
                     }
                     else
                     {
-                        return (int)_builtInCategory == category.Id.IntegerValue;
+                        return _builtInCategoryId == category.Id.IntegerValue;
                     }
                 }
             }
-
             return false;
-        }
-    }
-
-    internal static class ReferenceExtension
-    {
-        public static Element GetElement(this Reference reference, Document document)
-        {
-            Element elementReference = document.GetElement(reference.ElementId);
-            if (elementReference is RevitLinkInstance instance)
-            {
-                return instance.GetLinkDocument().GetElement(reference.LinkedElementId);
-            }
-            else
-            {
-                return elementReference;
-            }
         }
     }
 }
